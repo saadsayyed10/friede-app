@@ -1,11 +1,14 @@
 import { Button } from "@/components/ui/button";
 import Navbar from "./Unverified/Navbar";
 import {
+  Activity,
   Badge,
   BotMessageSquare,
   Calendar,
+  CalendarDays,
   Clock,
   LogIn,
+  MessageSquare,
   Pill,
   UserKey,
 } from "lucide-react";
@@ -62,7 +65,6 @@ const Landing = () => {
               </Button>
             </div>
           </div>
-
           <div className="flex justify-end items-end flex-col w-[50%] lg:gap-y-6">
             <div className="w-full rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md sm:p-6">
               <div className="flex flex-col gap-5">
@@ -151,6 +153,106 @@ const Landing = () => {
                       interactions detected with your current profile."
                     </p>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-center items-center w-full flex-col lg:gap-y-6 lg:mt-16">
+          <Button
+            variant={"secondary"}
+            className={"bg-white text-green-700 hover:bg-white font-semibold"}
+          >
+            THOUGHTFULLY DESIGNED CARE
+          </Button>
+
+          <h2 className="text-6xl font-semibold text-neutral-800 text-center">
+            Precision clarity for complex care
+            <br /> routines
+          </h2>
+
+          <h6 className="w-[60%] text-lg text-neutral-600 text-center">
+            Everything you need to navigate multiple prescriptions safely,
+            intuitively and without confusion.
+          </h6>
+
+          <div className="flex justify-center items-center w-full lg:gap-x-8">
+            <div className="w-full rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md sm:p-6">
+              <div className="flex flex-col gap-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                    <Activity size={23} />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl">
+                      Understand medical <br />
+                      information
+                    </h4>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center">
+                  <p className="mt-1 text-sm text-neutral-500">
+                    Demystify complex medical teminology. Obtain plain language
+                    summaries detailing medication purpose, contradictions and
+                    everyday dietary guidelines.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md sm:p-6">
+              <div className="flex flex-col gap-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                    <CalendarDays size={23} />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl">
+                      Keep personal information organized
+                    </h4>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center">
+                  <p className="mt-1 text-sm text-neutral-500">
+                    Centralize your entire medical history, caregiver notes,
+                    refill alerts and daily adherence records securely within an
+                    encrypted single pane.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="w-full rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md sm:p-6">
+              <div className="flex flex-col gap-5">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-green-100 text-green-700">
+                    <MessageSquare size={23} />
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-lg font-semibold tracking-tight text-neutral-900 sm:text-xl">
+                      Get help with everyday medical questions
+                    </h4>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center">
+                  <p className="mt-1 text-sm text-neutral-500">
+                    Unsure whether to take your tablet? Ask Friede anytime. My
+                    clinical dialog model provides calibrated guidance backed by
+                    rigorous protocols.
+                  </p>
                 </div>
               </div>
             </div>
