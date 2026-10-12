@@ -6,13 +6,14 @@
 
 1. Sync **Clerk** user to the **MongoDB.**
 2. Check if the logged in **Google** account with **Clerk ID** account exists in the **MongoDB.**
-3. Update user account information.
-4. Delete user account.
+3. Fetch authenticated and authorized user data.
+4. Update user account information.
+5. Delete user account.
 </aside>
 
 ## 1.1 - Sync Clerk user to MongoDB.
 
-![Sync Clerk user to MongoDB.](module1_1.png)
+![Sync Clerk user to MongoDB](module1_1.png)
 
 1. User is on the landing page at `/` and user hits the **Get Started** button.
 2. A **Google OAuth 2.0** authorization is triggered and user chooses the account to login.
@@ -47,3 +48,39 @@
    1. If yes, **status 200** → it returns **true** then \***\*redirects to the appropriate page**.\*\*
    2. If no, **status 403** → it returns **false**.
 4. For verifying process, user must be authenticated, if not then **status 401** → Throw unauthorized error.
+
+## 1.3 - Fetch user information.
+
+![Fetch user information](module1_3.png)
+
+1. From the logged in user, get the **clerk ID** from the **token**.
+2. Check whether the **clerk ID** is also present in the **MongoDB**.
+   1. If no, then **status 403** → Throw error message of user existence unavailable.
+3. **Status 200** → Send user information data in a **JSON** format to the client.
+4. For fetching data, user must be authenticated as well as authorized, if not then **status 401** → Throw unauthorized error.
+
+## 1.4 - Update user information.
+
+![Update user information](module1_4.png)
+
+1. From the navbar, click the profile picture icon to trigger dropdown-menu.
+2. Hit the **Settings** menu item/option and it will redirect user to `/freide/settings` page.
+3. On this page user will find all it’s information like **Name, Email, Uploaded Prescriptions, Allergies, Remaining and Allocated space, etc.**
+4. Basic details and allergies can only be updated.
+5. User updates the values appropriately and hit update button.
+   1. When updating is successful, **status 200** → values get saved in **MongoDB** and state management is refreshed with new data.
+   2. If updating is unsuccessful, **status 500** → throw appropriate error message.
+6. For updating process, user must be authenticated, if not then **status 401** → Throw unauthorized error.
+
+## 1.5 - Delete user account.
+
+![Delete user account](module1_5.png)
+
+1. From the logged in user, get the **clerk ID** from the **token**.
+2. Check whether the **clerk ID** is also present in the **MongoDB**.
+   1. If no, then **status 403** → Throw error message of user existence unavailable.
+3. Use the **clerk ID** to delete the user from the clerk management.
+4. Then use that same **clerk ID** to delete from **MongoDB** as well.
+   1. If succeeds, **status 200 →** User account deleted.
+   2. If fails, **status 500** → Throw appropriate error message.
+5. For deleting process, user must be authenticated, if not then **status 401** → Throw unauthorized error.
