@@ -1,10 +1,13 @@
-import { Button } from "./components/ui/button";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Landing from "./pages/Landing";
 
 const App = () => {
   return (
-    <div className="bg-red-200 flex justify-center items-center">
-      <Button>Hello World</Button>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Landing />} />
+      </Routes>
+    </Router>
   );
 };
 
