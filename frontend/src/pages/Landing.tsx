@@ -12,11 +12,13 @@ import {
   Pill,
   UserKey,
 } from "lucide-react";
+import Footer from "./Unverified/Footer";
 
 const Landing = () => {
   return (
     <>
       <Navbar />
+
       <div className="flex justify-start items-center w-full min-h-screen bg-white lg:py-10 lg:px-20 flex-col lg:gap-y-10">
         {/* Hero Section */}
         <div className="flex justify-center items-center w-full">
@@ -259,6 +261,8 @@ const Landing = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </>
   );
 };
