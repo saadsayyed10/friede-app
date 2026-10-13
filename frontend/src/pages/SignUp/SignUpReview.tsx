@@ -1,0 +1,106 @@
+import { Button } from "@/components/ui/button";
+import Footer from "../Unverified/Footer";
+import Navbar from "../Unverified/Navbar";
+import { Check, ShieldCheck } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+
+const SignUpReview = () => {
+  return (
+    <>
+      <Navbar />
+
+      <div className="flex justify-start items-start w-full lg:h-min min-h-screen flex-col gap-y-10  lg:px-16 px-6 py-4 lg:py-20">
+        <div className="flex justify-center items-center w-full gap-x-2 lg:mb-14 mb-10 lg:mt-0 mt-4">
+          <div className="flex justify-center items-center flex-col gap-y-2">
+            <div className="flex justify-center items-center w-10 h-10 rounded-[100%] bg-green-700">
+              <Check color="white" />
+            </div>
+
+            <h6 className="text-xs text-neutral-400 font-medium">
+              Your Profile
+            </h6>
+          </div>
+
+          <div className="bg-green-700 h-1 w-50 rounded-xl" />
+
+          <div className="flex justify-center items-center flex-col gap-y-2">
+            <div className="flex justify-center items-center w-10 h-10 rounded-[100%] bg-green-700">
+              <Check color="white" />
+            </div>
+
+            <h6 className="text-xs text-neutral-400 font-medium">Allergies</h6>
+          </div>
+
+          <div className="bg-green-700 h-1 w-50 rounded-xl" />
+
+          <div className="flex justify-center items-center flex-col gap-y-2">
+            <div className="flex justify-center items-center w-10 h-10 rounded-[100%] bg-green-700">
+              <h5 className="text-neutral-200 text-xl font-semibold">3</h5>
+            </div>
+
+            <h6 className="text-xs text-green-700 font-medium">Review</h6>
+          </div>
+        </div>
+        <div className="flex justify-start items-start w-full flex-col gap-y-4">
+          <Button
+            variant={"secondary"}
+            className={
+              "rounded-full bg-green-100 text-green-700 hover:bg-green-100"
+            }
+            size={"xs"}
+          >
+            <ShieldCheck color="green" /> FINAL STEP
+          </Button>
+
+          <h2 className="lg:text-5xl text-4xl font-semibold text-neutral-800">
+            Review your information.
+          </h2>
+
+          <h6 className="lg:w-[50%] text-base text-neutral-600">
+            Make sure everything is correct before creating your Friede account.
+          </h6>
+        </div>
+
+        <div className="flex justify-start items-start flex-col gap-y-2 w-full">
+          <Label>
+            Full Name<sup className="text-red-600">*</sup>
+          </Label>
+          <Input className="lg:w-80 w-full" placeholder="Saad Sayyed" />
+        </div>
+        <div className="flex justify-start items-start flex-col gap-y-2 w-full">
+          <Label>
+            Email Address<sup className="text-red-600">*</sup>
+          </Label>
+          <Input
+            className="lg:w-80 w-full"
+            placeholder="saadsyed950@gmail.com"
+          />
+        </div>
+
+        <div className="flex justify-start items-start lg:flex-row flex-col gap-y-2 lg:gap-x-4 w-full">
+          <Button
+            className={
+              "bg-green-700 text-green-100 hover:bg-green-800 py-6 lg:w-min w-full"
+            }
+            size={"lg"}
+          >
+            Sign Up
+          </Button>
+
+          <Button
+            variant={"ghost"}
+            className={"py-6 lg:w-min w-full text-neutral-600"}
+            size={"lg"}
+          >
+            Cancel and Logout
+          </Button>
+        </div>
+      </div>
+
+      <Footer />
+    </>
+  );
+};
+
+export default SignUpReview;
