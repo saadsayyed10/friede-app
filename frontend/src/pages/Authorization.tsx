@@ -8,7 +8,7 @@ const Authorization = () => {
     <>
       <Navbar />
 
-      <div className="flex justify-center items-center w-full min-h-screen flex-col lg:gap-y-16 gap-y-12">
+      <div className="flex justify-center items-center w-full lg:h-min min-h-screen flex-col lg:gap-y-16 gap-y-12">
         <div className="flex justify-center items-center w-full flex-col gap-y-4 text-center">
           <Button
             variant={"secondary"}
