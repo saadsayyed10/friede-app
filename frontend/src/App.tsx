@@ -3,6 +3,8 @@ import Landing from "./pages/Landing";
 import Authorization from "./pages/Authorization";
 import SignUpBasic from "./pages/SignUp/SignUpBasic";
 import SignUpReview from "./pages/SignUp/SignUpReview";
+import Dashboard from "./pages/Verified/Dashboard";
+import Settings from "./pages/Verified/Settings";
 
 const App = () => {
   return (
@@ -12,6 +14,9 @@ const App = () => {
         <Route path="/authorization" element={<Authorization />} />
         <Route path="/signup/basic" element={<SignUpBasic />} />
         <Route path="/signup/review" element={<SignUpReview />} />
+
+        <Route path="/friede" element={<Dashboard />} />
+        <Route path="/friede/settings" element={<Settings />} />
       </Routes>
     </Router>
   );
