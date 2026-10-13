@@ -20,19 +20,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
-    medicines: {
-      type: String,
-      required: false,
-    },
     profilePictureUrl: {
-      type: String,
-      required: false,
-    },
-    prescriptionsUrl: {
-      type: String,
-      required: false,
-    },
-    prescriptions: {
       type: String,
       required: false,
     },
