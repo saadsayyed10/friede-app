@@ -19,10 +19,10 @@ const Landing = () => {
     <>
       <Navbar />
 
-      <div className="flex justify-start items-center w-full min-h-screen bg-white lg:py-10 lg:px-20 flex-col lg:gap-y-10">
+      <div className="flex justify-start items-center w-full min-h-screen bg-white py-10 lg:px-20 px-6 flex-col gap-y-10 mb-20">
         {/* Hero Section */}
-        <div className="flex justify-center items-center w-full">
-          <div className="flex justify-start items-start flex-col w-[50%] lg:gap-y-6">
+        <div className="flex justify-center items-center w-full lg:flex-row flex-col">
+          <div className="flex lg:justify-start justify-center lg:items-start items-center flex-col lg:w-[50%] w-full gap-y-6">
             <Button
               variant={"secondary"}
               className={
@@ -32,7 +32,7 @@ const Landing = () => {
               <Badge fill="green" /> AI Medication Companion
             </Button>
 
-            <h2 className="text-6xl font-semibold text-neutral-800">
+            <h2 className="lg:text-6xl text-5xl font-semibold text-neutral-800 text-center lg:text-left">
               Understand your
               <br />
               medicines with
@@ -40,16 +40,16 @@ const Landing = () => {
               <span className="text-green-700">confidence.</span>
             </h2>
 
-            <h6 className="w-[88%] text-lg text-neutral-600">
+            <h6 className="lg:w-[88%] text-lg text-neutral-600 text-center lg:text-left">
               Friede helps patient understand prescribed medications, manage
               complex schedules and resolve everyday medication related doubts
               with personalized, clinically aligned AI support.
             </h6>
 
-            <div className="flex justify-start items-start w-full lg:gap-x-6">
+            <div className="flex lg:justify-start justify-center lg:items-start items-center w-full lg:flex-row flex-col gap-y-4 lg:gap-x-6">
               <Button
                 className={
-                  "bg-green-700 text-green-100 hover:bg-green-800 lg:py-6"
+                  "bg-green-700 text-green-100 hover:bg-green-800 py-6 lg:w-min w-full"
                 }
                 size={"lg"}
               >
@@ -59,7 +59,7 @@ const Landing = () => {
               <Button
                 variant={"secondary"}
                 className={
-                  "bg-green-100 text-green-700 hover:bg-green-100 lg:py-6"
+                  "bg-green-100 text-green-700 hover:bg-green-100 py-6 lg:w-min w-full"
                 }
                 size={"lg"}
               >
@@ -67,7 +67,8 @@ const Landing = () => {
               </Button>
             </div>
           </div>
-          <div className="flex justify-end items-end flex-col w-[50%] lg:gap-y-6">
+
+          <div className="flex lg:justify-end justify-center lg:items-end items-center flex-col lg:w-[50%] w-full gap-y-6 lg:mt-0 mt-10">
             <div className="w-full rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md sm:p-6">
               <div className="flex flex-col gap-5">
                 {/* Medication header */}
@@ -161,7 +162,7 @@ const Landing = () => {
           </div>
         </div>
 
-        <div className="flex justify-center items-center w-full flex-col lg:gap-y-6 lg:mt-16">
+        <div className="flex justify-center items-center w-full flex-col gap-y-6 lg:mt-16 mt-10">
           <Button
             variant={"secondary"}
             className={"bg-white text-green-700 hover:bg-white font-semibold"}
@@ -169,17 +170,17 @@ const Landing = () => {
             THOUGHTFULLY DESIGNED CARE
           </Button>
 
-          <h2 className="text-6xl font-semibold text-neutral-800 text-center">
+          <h2 className="lg:text-6xl text-5xl font-semibold text-neutral-800 text-center">
             Precision clarity for complex care
             <br /> routines
           </h2>
 
-          <h6 className="w-[60%] text-lg text-neutral-600 text-center">
+          <h6 className="lg:w-[60%] text-lg text-neutral-600 text-center">
             Everything you need to navigate multiple prescriptions safely,
             intuitively and without confusion.
           </h6>
 
-          <div className="flex justify-center items-center w-full lg:gap-x-8">
+          <div className="flex justify-center items-center lg:flex-row flex-col w-full lg:gap-x-8 gap-y-8">
             <div className="w-full rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm transition-all duration-200 hover:shadow-md sm:p-6">
               <div className="flex flex-col gap-5">
                 <div className="flex items-start gap-3">

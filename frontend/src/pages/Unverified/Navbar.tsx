@@ -3,8 +3,8 @@ import { Lock } from "lucide-react";
 
 const Navbar = () => {
   return (
-    <div className="bg-white flex justify-between items-center w-full lg:px-20 lg:py-6">
-      <h3 className="lg:text-4xl text-green-700 font-semibold">Friede</h3>
+    <div className="bg-white flex justify-between items-center w-full px-6 py-4 lg:px-20 lg:py-6">
+      <h3 className="text-4xl text-green-700 font-semibold">Friede</h3>
       <Button
         variant={"secondary"}
         className={
