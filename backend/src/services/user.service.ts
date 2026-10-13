@@ -9,3 +9,12 @@ export const syncClerkUserService = async (
   const user = await User.create({ clerkId, name, email, profilePictureUrl });
   return user;
 };
+
+export const verifyAuthService = async (clerkId: string) => {
+  const existingUser = await User.findOne({ clerkId });
+  if (existingUser) {
+    return true;
+  }
+
+  return false;
+};
