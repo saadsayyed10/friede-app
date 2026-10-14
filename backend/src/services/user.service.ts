@@ -37,5 +37,5 @@ export const updateBasicUserDetailsService = async (
 };
 
 export const deleteUserAccountService = async (clerkId: string) => {
-  return await User.deleteOne({ clerkId });
+  await User.deleteOne({ clerkId });
 };
