@@ -35,3 +35,7 @@ export const updateBasicUserDetailsService = async (
 ) => {
   return await User.updateOne({ clerkId }, { name, profilePictureUrl });
 };
+
+export const deleteUserAccountService = async (clerkId: string) => {
+  return await User.deleteOne({ clerkId });
+};
