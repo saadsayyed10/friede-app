@@ -112,8 +112,6 @@ export const updateBasicUserDetailsController = async (
   req: Request,
   res: Response,
 ) => {
-  const { userId } = req.query;
-
   const { name, profilePictureUrl } = req.body;
   if (!name) {
     console.log("Name is required to update on the profile");
@@ -124,15 +122,15 @@ export const updateBasicUserDetailsController = async (
   }
 
   try {
-    // const { isAuthenticated, userId } = getAuth(req);
+    const { isAuthenticated, userId } = getAuth(req);
 
-    // if (!isAuthenticated) {
-    //   console.log("Unauthorized: User must be logged in to update profile");
-    //   return res.status(401).json({
-    //     success: false,
-    //     error: "Unauthorized: User must be logged in to update profile",
-    //   });
-    // }
+    if (!isAuthenticated) {
+      console.log("Unauthorized: User must be logged in to update profile");
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized: User must be logged in to update profile",
+      });
+    }
 
     if (!userId) {
       console.log("Clerk ID is required to update profile");
@@ -143,11 +141,15 @@ export const updateBasicUserDetailsController = async (
     }
 
     const user = await updateBasicUserDetailsService(
-      userId as string,
+      userId,
       name,
       profilePictureUrl,
     );
-    res.status(200).json({ success: true, user });
+    res.status(200).json({
+      success: true,
+      message: "Your profile has been updated successfully",
+      user,
+    });
   } catch (error: any) {
     console.log(error.message);
     return res.status(500).json({ success: false, error: error.message });
