@@ -161,18 +161,16 @@ export const deleteUserAccountController = async (
   req: Request,
   res: Response,
 ) => {
-  const { userId } = req.query;
-
   try {
-    // const { isAuthenticated, userId } = getAuth(req);
+    const { isAuthenticated, userId } = getAuth(req);
 
-    // if (!isAuthenticated) {
-    //   console.log("Unauthorized: User must be logged in to delete profile");
-    //   return res.status(401).json({
-    //     success: false,
-    //     error: "Unauthorized: User must be logged in to delete profile",
-    //   });
-    // }
+    if (!isAuthenticated) {
+      console.log("Unauthorized: User must be logged in to delete profile");
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized: User must be logged in to delete profile",
+      });
+    }
 
     if (!userId) {
       console.log("Clerk ID is required to delete profile");
@@ -182,8 +180,8 @@ export const deleteUserAccountController = async (
       });
     }
 
-    await deleteUserAccountService(userId as string);
-    res.status(204).json({
+    await deleteUserAccountService(userId);
+    res.status(200).json({
       success: true,
       message: "Your profile has been deleted successfully",
     });
