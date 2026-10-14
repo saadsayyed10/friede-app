@@ -27,3 +27,11 @@ export const userProfileService = async (clerkId: string) => {
 
   return user;
 };
+
+export const updateBasicUserDetailsService = async (
+  clerkId: string,
+  name: string,
+  profilePictureUrl: string,
+) => {
+  return await User.updateOne({ clerkId }, { name, profilePictureUrl });
+};
