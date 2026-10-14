@@ -18,3 +18,7 @@ export const verifyAuthService = async (clerkId: string) => {
 
   return false;
 };
+
+export const userProfileService = async (clerkId: string) => {
+  return await User.findOne({ clerkId });
+};

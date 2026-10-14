@@ -55,10 +55,10 @@ export const verifyAuthController = async (req: Request, res: Response) => {
     const { isAuthenticated, userId } = getAuth(req);
 
     if (!isAuthenticated) {
-      console.log("Unauthorized: User must be logged in to sync");
+      console.log("Unauthorized: User must be logged in to verify");
       return res.status(401).json({
         success: false,
-        error: "Unauthorized: User must be logged in to sync",
+        error: "Unauthorized: User must be logged in to verify",
       });
     }
 
