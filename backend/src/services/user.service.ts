@@ -20,5 +20,10 @@ export const verifyAuthService = async (clerkId: string) => {
 };
 
 export const userProfileService = async (clerkId: string) => {
-  return await User.findOne({ clerkId });
+  const user = await User.findOne({ clerkId });
+  if (!user) {
+    throw new Error("User with this Clerk ID do not exist in database");
+  }
+
+  return user;
 };
