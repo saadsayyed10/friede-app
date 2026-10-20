@@ -58,3 +58,11 @@ export const updateUserBasicDetailAPI = async (
     },
   );
 };
+
+export const deleteUserAccountAPI = async (token: string) => {
+  return axios.delete(`${apiUrl}/user/profile/delete`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
