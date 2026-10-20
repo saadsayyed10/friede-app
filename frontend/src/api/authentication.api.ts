@@ -39,3 +39,22 @@ export const fetchUserProfileAPI = async (token: string) => {
     },
   });
 };
+
+export const updateUserBasicDetailAPI = async (
+  name: string,
+  profilePictureUrl: string,
+  token: string,
+) => {
+  return axios.put(
+    `${apiUrl}/user/update/basic`,
+    {
+      name,
+      profilePictureUrl,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+};
