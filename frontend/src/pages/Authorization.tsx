@@ -2,12 +2,20 @@ import { Button } from "@/components/ui/button";
 import Footer from "./Unverified/Footer";
 import Navbar from "./Unverified/Navbar";
 import { KeyRound, Shield } from "lucide-react";
-import { useClerk, useUser } from "@clerk/react";
-import { useEffect } from "react";
+import { useAuth, useClerk, useUser } from "@clerk/react";
+import { useEffect, useState } from "react";
+import { toast } from "@/components/ui/toast";
+import { useNavigate } from "react-router-dom";
+import { verifyUserAPI } from "@/api/authentication.api";
 
 const Authorization = () => {
-  const { user, isSignedIn } = useUser();
+  const { isSignedIn } = useUser();
+  const { getToken } = useAuth();
   const { signOut } = useClerk();
+
+  const [result, setResult] = useState(false);
+
+  const router = useNavigate();
 
   const handleSignOut = async () => {
     try {
@@ -17,14 +25,37 @@ const Authorization = () => {
     }
   };
 
-  // const handleVerifyUser = async () => {
+  const handleVerifyUser = async () => {
+    const token = await getToken();
 
-  // }
+    try {
+      await verifyUserAPI(token!)
+        .then((res) => {
+          setResult(res.data.result);
+          console.log(result);
+
+          if (result === true) router("/dashboard");
+
+          setTimeout(() => {}, 3000);
+
+          router("/signup/basic");
+        })
+        .catch((err) => {
+          toast.add({
+            title: "Failed to authorize your account",
+            description: err.response.data.error,
+          });
+        });
+    } catch (error: any) {
+      toast.add({
+        title: "Failed to authorize your account",
+        description: error.message,
+      });
+    }
+  };
 
   useEffect(() => {
-    if (user) {
-      console.log(user.id);
-    }
+    handleVerifyUser();
   }, [isSignedIn]);
 
   return (
