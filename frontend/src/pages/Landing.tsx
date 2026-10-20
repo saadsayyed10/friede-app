@@ -8,6 +8,7 @@ import {
   CalendarDays,
   Clock,
   LogIn,
+  LogOut,
   MessageSquare,
   Pill,
   UserKey,
@@ -17,9 +18,13 @@ import { useSignIn } from "@clerk/react/legacy";
 import { useState } from "react";
 import { toast } from "@/components/ui/toast";
 import { Spinner } from "@/components/ui/spinner";
+import { useAuth, useClerk } from "@clerk/react";
 
 const Landing = () => {
   const { signIn } = useSignIn();
+  const { isSignedIn } = useAuth();
+  const { signOut } = useClerk();
+
   const [loading, setLoading] = useState(false);
 
   const handleAuthentication = async () => {
@@ -47,6 +52,16 @@ const Landing = () => {
         title: "Google Sign In failed",
         description: error.message,
       });
+    }
+  };
+
+  const handleSignOut = async () => {
+    setLoading(true);
+    try {
+      await signOut({ redirectUrl: "/" }).then(() => setLoading(false));
+    } catch (error: any) {
+      setLoading(false);
+      console.log(error.message);
     }
   };
 
@@ -81,31 +96,47 @@ const Landing = () => {
               with personalized, clinically aligned AI support.
             </h6>
 
-            <div className="flex lg:justify-start justify-center lg:items-start items-center w-full lg:flex-row flex-col gap-y-4 lg:gap-x-6">
-              <Button
-                onClick={handleAuthentication}
-                className={
-                  "bg-green-700 text-green-100 hover:bg-green-800 py-6 lg:w-min w-full"
-                }
-                size={"lg"}
-                disabled={loading}
-              >
-                {loading ? <Spinner /> : <UserKey color="white" />} Get Started
-              </Button>
+            {isSignedIn ? (
+              <div className="flex lg:justify-start justify-center lg:items-start items-center w-full lg:flex-row flex-col gap-y-4 lg:gap-x-6">
+                <Button
+                  onClick={handleSignOut}
+                  className={
+                    "bg-green-700 text-green-100 hover:bg-green-800 py-6 lg:w-min w-full"
+                  }
+                  size={"lg"}
+                  disabled={loading}
+                >
+                  {loading ? <Spinner /> : <LogOut color="white" />} Sign Out
+                </Button>
+              </div>
+            ) : (
+              <div className="flex lg:justify-start justify-center lg:items-start items-center w-full lg:flex-row flex-col gap-y-4 lg:gap-x-6">
+                <Button
+                  onClick={handleAuthentication}
+                  className={
+                    "bg-green-700 text-green-100 hover:bg-green-800 py-6 lg:w-min w-full"
+                  }
+                  size={"lg"}
+                  disabled={loading}
+                >
+                  {loading ? <Spinner /> : <UserKey color="white" />} Get
+                  Started
+                </Button>
 
-              <Button
-                onClick={handleAuthentication}
-                variant={"secondary"}
-                className={
-                  "bg-green-100 text-green-700 hover:bg-green-100 py-6 lg:w-min w-full"
-                }
-                size={"lg"}
-                disabled={loading}
-              >
-                {loading ? <Spinner /> : <LogIn color="green" />} Already have
-                an account?
-              </Button>
-            </div>
+                <Button
+                  onClick={handleAuthentication}
+                  variant={"secondary"}
+                  className={
+                    "bg-green-100 text-green-700 hover:bg-green-100 py-6 lg:w-min w-full"
+                  }
+                  size={"lg"}
+                  disabled={loading}
+                >
+                  {loading ? <Spinner /> : <LogIn color="green" />} Already have
+                  an account?
+                </Button>
+              </div>
+            )}
           </div>
 
           <div className="flex lg:justify-end justify-center lg:items-end items-center flex-col lg:w-[50%] w-full gap-y-6 lg:mt-0 mt-10">

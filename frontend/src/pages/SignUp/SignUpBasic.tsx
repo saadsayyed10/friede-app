@@ -4,8 +4,15 @@ import Navbar from "../Unverified/Navbar";
 import { CircleCheck, Lock, ShieldCheck, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useClerk } from "@clerk/react";
 
 const SignUpBasic = () => {
+  const { signOut } = useClerk();
+
+  const handleSignOut = async () => {
+    await signOut({ redirectUrl: "/" });
+  };
+
   return (
     <>
       <Navbar />
@@ -109,6 +116,7 @@ const SignUpBasic = () => {
             variant={"ghost"}
             className={"py-6 lg:w-min w-full text-neutral-600"}
             size={"lg"}
+            onClick={handleSignOut}
           >
             Cancel and Logout
           </Button>
