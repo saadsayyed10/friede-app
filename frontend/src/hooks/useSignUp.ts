@@ -16,7 +16,7 @@ interface Registration {
   reset: () => void;
 }
 
-export const useAuthorization = create<Registration>((set) => ({
+export const useSignUp = create<Registration>((set) => ({
   userId: null,
   name: null,
   email: null,
