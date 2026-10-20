@@ -13,8 +13,43 @@ import {
   UserKey,
 } from "lucide-react";
 import Footer from "./Unverified/Footer";
+import { useSignIn } from "@clerk/react/legacy";
+import { useState } from "react";
+import { toast } from "@/components/ui/toast";
+import { Spinner } from "@/components/ui/spinner";
 
 const Landing = () => {
+  const { signIn } = useSignIn();
+  const [loading, setLoading] = useState(false);
+
+  const handleAuthentication = async () => {
+    if (!signIn) return;
+    setLoading(true);
+    try {
+      await signIn
+        .authenticateWithRedirect({
+          strategy: "oauth_google",
+          redirectUrl: "/sso-callback",
+          redirectUrlComplete: "/authorization",
+        })
+        .then(() => {
+          setLoading(false);
+        })
+        .catch((err) => {
+          toast.add({
+            title: "Google Sign In failed",
+            description: err,
+          });
+        });
+    } catch (error: any) {
+      setLoading(false);
+      toast.add({
+        title: "Google Sign In failed",
+        description: error.message,
+      });
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -48,22 +83,27 @@ const Landing = () => {
 
             <div className="flex lg:justify-start justify-center lg:items-start items-center w-full lg:flex-row flex-col gap-y-4 lg:gap-x-6">
               <Button
+                onClick={handleAuthentication}
                 className={
                   "bg-green-700 text-green-100 hover:bg-green-800 py-6 lg:w-min w-full"
                 }
                 size={"lg"}
+                disabled={loading}
               >
-                <UserKey color="white" /> Get Started
+                {loading ? <Spinner /> : <UserKey color="white" />} Get Started
               </Button>
 
               <Button
+                onClick={handleAuthentication}
                 variant={"secondary"}
                 className={
                   "bg-green-100 text-green-700 hover:bg-green-100 py-6 lg:w-min w-full"
                 }
                 size={"lg"}
+                disabled={loading}
               >
-                <LogIn color="green" /> Already have an account?
+                {loading ? <Spinner /> : <LogIn color="green" />} Already have
+                an account?
               </Button>
             </div>
           </div>
@@ -148,7 +188,11 @@ const Landing = () => {
                 <div className="flex items-start gap-3 rounded-xl bg-green-50/80 p-3.5">
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-neutral-800">
-                      "Hello Saad Sayyed,
+                      "
+                      <span className="mt-1 text-sm leading-5 text-neutral-600">
+                        Hello
+                      </span>{" "}
+                      Saad Sayyed,
                     </p>
                     <p className="mt-1 text-sm leading-5 text-neutral-600">
                       Your Metformin HCL is best taken with a glass of water,
