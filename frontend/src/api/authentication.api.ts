@@ -31,3 +31,11 @@ export const verifyUserAPI = async (token: string) => {
     },
   });
 };
+
+export const fetchUserProfileAPI = async (token: string) => {
+  return axios.get(`${apiUrl}/user/profile`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
