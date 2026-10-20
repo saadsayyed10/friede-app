@@ -3,23 +3,25 @@ import Footer from "./Unverified/Footer";
 import Navbar from "./Unverified/Navbar";
 import { KeyRound, Shield } from "lucide-react";
 import { useAuth, useClerk, useUser } from "@clerk/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { toast } from "@/components/ui/toast";
 import { useNavigate } from "react-router-dom";
 import { verifyUserAPI } from "@/api/authentication.api";
+import { useAuthorization } from "@/hooks/useAuthorization";
 
 const Authorization = () => {
   const { isSignedIn } = useUser();
   const { getToken } = useAuth();
   const { signOut } = useClerk();
 
-  const [result, setResult] = useState(false);
+  const { result, setResult, clearResult } = useAuthorization();
 
   const router = useNavigate();
 
   const handleSignOut = async () => {
     try {
       await signOut({ redirectUrl: "/" });
+      clearResult();
     } catch (error: any) {
       console.log(error.message);
     }

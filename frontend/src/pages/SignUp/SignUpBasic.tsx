@@ -4,13 +4,17 @@ import Navbar from "../Unverified/Navbar";
 import { CircleCheck, Lock, ShieldCheck, User } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { useClerk } from "@clerk/react";
+import { useClerk, useUser } from "@clerk/react";
+import { useAuthorization } from "@/hooks/useAuthorization";
 
 const SignUpBasic = () => {
+  const { user } = useUser();
   const { signOut } = useClerk();
+  const { clearResult } = useAuthorization();
 
   const handleSignOut = async () => {
     await signOut({ redirectUrl: "/" });
+    clearResult();
   };
 
   return (
@@ -68,11 +72,15 @@ const SignUpBasic = () => {
           </h6>
         </div>
         <div className="flex justify-start items-start w-full bg-green-100/50 lg:px-4 lg:py-4 px-6 py-2 rounded-xl gap-x-4 shadow">
-          <div className="lg:w-20 lg:h-18 w-28 h-20 bg-green-700 rounded-[100%]" />
+          <img
+            className="lg:w-20 lg:h-18 w-28 h-20 rounded-[100%]"
+            src={user?.imageUrl!}
+            alt={user?.imageUrl!}
+          />
 
           <div className="flex justify-start items-start w-full flex-col mt-4">
             <h6 className="text-base font-semibold text-neutral-800">
-              Saad Sayyed
+              {user?.fullName!}
             </h6>
 
             <span className="lg:w-[50%] lg:text-sm text-xs text-neutral-600 flex items-center w-full">
@@ -86,7 +94,7 @@ const SignUpBasic = () => {
           <Label>
             Full Name<sup className="text-red-600">*</sup>
           </Label>
-          <Input className="lg:w-80 w-full" placeholder="Saad Sayyed" />
+          <Input className="lg:w-80 w-full" value={user?.fullName!} />
         </div>
         <div className="flex justify-start items-start flex-col gap-y-2 w-full">
           <Label>
@@ -94,7 +102,8 @@ const SignUpBasic = () => {
           </Label>
           <Input
             className="lg:w-80 w-full"
-            placeholder="saadsyed950@gmail.com"
+            disabled
+            value={user?.emailAddresses[0].emailAddress!}
           />
 
           <span className="flex items-center w-full text-xs text-neutral-600 gap-x-1">

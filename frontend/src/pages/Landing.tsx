@@ -19,11 +19,13 @@ import { useState } from "react";
 import { toast } from "@/components/ui/toast";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth, useClerk } from "@clerk/react";
+import { useAuthorization } from "@/hooks/useAuthorization";
 
 const Landing = () => {
   const { signIn } = useSignIn();
   const { isSignedIn } = useAuth();
   const { signOut } = useClerk();
+  const { clearResult } = useAuthorization();
 
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +60,10 @@ const Landing = () => {
   const handleSignOut = async () => {
     setLoading(true);
     try {
-      await signOut({ redirectUrl: "/" }).then(() => setLoading(false));
+      await signOut({ redirectUrl: "/" }).then(() => {
+        setLoading(false);
+        clearResult();
+      });
     } catch (error: any) {
       setLoading(false);
       console.log(error.message);
