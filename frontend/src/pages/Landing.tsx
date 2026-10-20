@@ -119,21 +119,19 @@ const Landing = () => {
                   size={"lg"}
                   disabled={loading}
                 >
-                  {loading ? <Spinner /> : <UserKey color="white" />} Get
-                  Started
+                  <UserKey color="white" /> Get Started
                 </Button>
 
                 <Button
                   onClick={handleAuthentication}
                   variant={"secondary"}
                   className={
-                    "bg-green-100 text-green-700 hover:bg-green-100 py-6 lg:w-min w-full"
+                    "bg-green-100/70 text-green-700 hover:bg-green-100 py-6 lg:w-min w-full"
                   }
                   size={"lg"}
                   disabled={loading}
                 >
-                  {loading ? <Spinner /> : <LogIn color="green" />} Already have
-                  an account?
+                  <LogIn color="green" /> Already have an account?
                 </Button>
               </div>
             )}
