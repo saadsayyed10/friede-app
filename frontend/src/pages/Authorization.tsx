@@ -2,8 +2,31 @@ import { Button } from "@/components/ui/button";
 import Footer from "./Unverified/Footer";
 import Navbar from "./Unverified/Navbar";
 import { KeyRound, Shield } from "lucide-react";
+import { useClerk, useUser } from "@clerk/react";
+import { useEffect } from "react";
 
 const Authorization = () => {
+  const { user, isSignedIn } = useUser();
+  const { signOut } = useClerk();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut({ redirectUrl: "/" });
+    } catch (error: any) {
+      console.log(error.message);
+    }
+  };
+
+  // const handleVerifyUser = async () => {
+
+  // }
+
+  useEffect(() => {
+    if (user) {
+      console.log(user.id);
+    }
+  }, [isSignedIn]);
+
   return (
     <>
       <Navbar />
@@ -21,7 +44,7 @@ const Authorization = () => {
           </Button>
 
           <h2 className="lg:text-5xl text-4xl font-semibold text-neutral-800 text-center">
-            Google OAuth Authorization
+            Google OAuth <span onClick={handleSignOut}>Authorization</span>
           </h2>
 
           <h6 className="lg:w-[60%] text-base text-neutral-600 text-center">
