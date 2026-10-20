@@ -6,11 +6,28 @@ export const syncClerkUserAPI = async (
   name: string,
   email: string,
   profilePictureUrl: string,
+  token: string,
 ) => {
-  return axios.post(`${apiUrl}/user/signup`, {
-    userId,
-    name,
-    email,
-    profilePictureUrl,
+  return axios.post(
+    `${apiUrl}/user/signup`,
+    {
+      userId,
+      name,
+      email,
+      profilePictureUrl,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+};
+
+export const verifyUserAPI = async (token: string) => {
+  return axios.get(`${apiUrl}/user/verify`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 };
