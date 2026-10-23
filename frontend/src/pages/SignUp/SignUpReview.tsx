@@ -1,11 +1,67 @@
 import { Button } from "@/components/ui/button";
 import Footer from "../Unverified/Footer";
 import Navbar from "../Unverified/Navbar";
-import { Check, ShieldCheck } from "lucide-react";
+import { Check, Eye, ShieldCheck } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useSignUp } from "@/hooks/useSignUp";
+import { useAuthorization } from "@/hooks/useAuthorization";
+import { getToken, useClerk } from "@clerk/react";
+import { toast } from "@/components/ui/toast";
+import { useState } from "react";
+import { syncClerkUserAPI } from "@/api/authentication.api";
+import { Spinner } from "@/components/ui/spinner";
 
 const SignUpReview = () => {
+  const { signOut } = useClerk();
+  const { userId, name, email, profilePictureUrl, reset } = useSignUp();
+  const { clearResult } = useAuthorization();
+
+  const [loading, setLoading] = useState(false);
+
+  const handleSignOut = async () => {
+    await signOut({ redirectUrl: "/" });
+    clearResult();
+  };
+
+  const handleSignUp = async () => {
+    if (!userId || !name || !email || !profilePictureUrl) {
+      toast.add({
+        title: "Failed to sync your account",
+        description: "Please enter all the details to sync your account",
+      });
+
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const token = await getToken();
+
+      const res = await syncClerkUserAPI(
+        userId!,
+        name!,
+        email!,
+        profilePictureUrl!,
+        token!,
+      );
+
+      toast.add({
+        title: "Account synced to Friede app",
+        description: res.data.message,
+      });
+
+      reset();
+    } catch (error: any) {
+      toast.add({
+        title: "Failed to sync your account",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -36,7 +92,9 @@ const SignUpReview = () => {
 
           <div className="flex justify-center items-center flex-col gap-y-2">
             <div className="flex justify-center items-center w-10 h-10 rounded-[100%] bg-green-700">
-              <h5 className="text-neutral-200 text-xl font-semibold">3</h5>
+              <h5 className="text-neutral-200 text-xl font-semibold">
+                <Eye color="white" />
+              </h5>
             </div>
 
             <h6 className="text-xs text-green-700 font-medium">Review</h6>
@@ -66,16 +124,13 @@ const SignUpReview = () => {
           <Label>
             Full Name<sup className="text-red-600">*</sup>
           </Label>
-          <Input className="lg:w-80 w-full" placeholder="Saad Sayyed" />
+          <Input className="lg:w-80 w-full" disabled value={name!} />
         </div>
         <div className="flex justify-start items-start flex-col gap-y-2 w-full">
           <Label>
             Email Address<sup className="text-red-600">*</sup>
           </Label>
-          <Input
-            className="lg:w-80 w-full"
-            placeholder="saadsyed950@gmail.com"
-          />
+          <Input className="lg:w-80 w-full" disabled value={email!} />
         </div>
 
         <div className="flex justify-start items-start lg:flex-row flex-col gap-y-2 lg:gap-x-4 w-full">
@@ -84,14 +139,17 @@ const SignUpReview = () => {
               "bg-green-700 text-green-100 hover:bg-green-800 py-6 lg:w-min w-full"
             }
             size={"lg"}
+            disabled={loading}
+            onClick={handleSignUp}
           >
-            Sign Up
+            {loading && <Spinner />} Sign Up
           </Button>
 
           <Button
             variant={"ghost"}
             className={"py-6 lg:w-min w-full text-neutral-600"}
             size={"lg"}
+            onClick={handleSignOut}
           >
             Cancel and Logout
           </Button>

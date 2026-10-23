@@ -6,15 +6,35 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useClerk, useUser } from "@clerk/react";
 import { useAuthorization } from "@/hooks/useAuthorization";
+import { useSignUp } from "@/hooks/useSignUp";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const SignUpBasic = () => {
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const { signOut } = useClerk();
   const { clearResult } = useAuthorization();
+  const { setUserId, name, setName, setEmail, setProfilePictureUrl } =
+    useSignUp();
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setName(user?.fullName!);
+  }, [isSignedIn]);
 
   const handleSignOut = async () => {
     await signOut({ redirectUrl: "/" });
     clearResult();
+  };
+
+  const handleContinue = () => {
+    setUserId(user?.id!);
+    setName(name!);
+    setEmail(user?.emailAddresses[0].emailAddress!);
+    setProfilePictureUrl(user?.imageUrl!);
+
+    navigate("/signup/review");
   };
 
   return (
@@ -94,7 +114,11 @@ const SignUpBasic = () => {
           <Label>
             Full Name<sup className="text-red-600">*</sup>
           </Label>
-          <Input className="lg:w-80 w-full" value={user?.fullName!} />
+          <Input
+            className="lg:w-80 w-full"
+            value={name!}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
         <div className="flex justify-start items-start flex-col gap-y-2 w-full">
           <Label>
@@ -117,6 +141,7 @@ const SignUpBasic = () => {
               "bg-green-700 text-green-100 hover:bg-green-800 py-6 lg:w-min w-full"
             }
             size={"lg"}
+            onClick={handleContinue}
           >
             Continue
           </Button>
