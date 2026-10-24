@@ -6,6 +6,9 @@ export const syncClerkUserService = async (
   email: string,
   profilePictureUrl: string,
 ) => {
+  const existingUser = await User.findOne({ email });
+  if (existingUser) throw new Error("User account already exists in Friede");
+
   const user = await User.create({ clerkId, name, email, profilePictureUrl });
   return user;
 };

@@ -38,20 +38,25 @@ const SignUpReview = () => {
     try {
       const token = await getToken();
 
-      const res = await syncClerkUserAPI(
-        userId!,
-        name!,
-        email!,
-        profilePictureUrl!,
-        token!,
-      );
+      await syncClerkUserAPI(userId!, name!, email!, profilePictureUrl!, token!)
+        .then((res) => {
+          console.log(res.data.message);
 
-      toast.add({
-        title: "Account synced to Friede app",
-        description: res.data.message,
-      });
+          toast.add({
+            title: "Account synced to Friede app",
+            description: res.data.message,
+          });
 
-      reset();
+          reset();
+        })
+        .catch((err) => {
+          console.log(err?.response?.data.error);
+
+          toast.add({
+            title: "Failed to sync your account",
+            description: err?.response?.data.error,
+          });
+        });
     } catch (error: any) {
       toast.add({
         title: "Failed to sync your account",
