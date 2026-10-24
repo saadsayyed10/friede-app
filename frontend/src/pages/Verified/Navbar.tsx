@@ -1,4 +1,4 @@
-import { Bell, User } from "lucide-react";
+import { Bell, Menu } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -21,8 +21,8 @@ const Navbar = () => {
       </ul>
 
       <div className="flex lg:hidden justify-end items-end w-full gap-x-4">
-        <Bell />
-        <User />
+        <Bell size={23} color="gray" />
+        <Menu size={23} color="gray" />
       </div>
     </div>
   );

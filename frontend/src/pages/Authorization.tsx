@@ -39,7 +39,7 @@ const Authorization = () => {
           new Promise<void>((resolve) => setTimeout(resolve, 3000));
 
           if (res.data.result === true) {
-            router("/friede");
+            router("/friede/settings");
           } else {
             router("/signup/basic");
           }
