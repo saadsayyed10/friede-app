@@ -1,19 +1,25 @@
 import { getToken, useClerk } from "@clerk/react";
 import Navbar from "./Navbar";
 import { fetchUserProfileAPI } from "@/api/authentication.api";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSignUp } from "@/hooks/useSignUp";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { Spinner } from "@/components/ui/spinner";
 
 const Dashboard = () => {
   const { setUserId, setName, setEmail, setProfilePictureUrl } = useSignUp();
   const { signOut } = useClerk();
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
 
   const handleSignOut = async () => {
     await signOut({ redirectUrl: "/" });
   };
 
   const handleFetchProfile = async () => {
+    setLoading(true);
     try {
       const token = await getToken();
 
@@ -26,11 +32,15 @@ const Dashboard = () => {
           setName(user.name!);
           setEmail(user.email!);
           setProfilePictureUrl(user.profilePictureUrl!);
+
+          navigate("/friede/settings");
         })
         .catch((err) => console.log(err?.response.data.error));
     } catch (error: any) {
       console.log(error.message);
       await signOut({ redirectUrl: "/" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -46,7 +56,11 @@ const Dashboard = () => {
         <h1 className="text-3xl font-medium text-neutral-800 text-center">
           WORK IN PROGRESS
         </h1>
-        <Button onClick={handleSignOut}>Logout</Button>
+        {loading ? (
+          <Spinner />
+        ) : (
+          <Button onClick={handleSignOut}>Logout</Button>
+        )}
       </div>
     </>
   );

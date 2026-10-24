@@ -13,9 +13,46 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Footer from "../Unverified/Footer";
+import { useState } from "react";
+import { toast } from "@/components/ui/toast";
+import { getToken, useClerk } from "@clerk/react";
+import { deleteUserAccountAPI } from "@/api/authentication.api";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Settings = () => {
   const { name, email, profilePictureUrl, userId } = useSignUp();
+  const { signOut } = useClerk();
+
+  const [deleteLoader, setDeleteLoader] = useState(false);
+
+  const handleAccountDelete = async () => {
+    setDeleteLoader(true);
+    try {
+      const token = await getToken();
+
+      await deleteUserAccountAPI(token!);
+      await signOut({ redirectUrl: "/" });
+    } catch (error: any) {
+      toast.add({
+        title: "Failed to delete account",
+        description:
+          "Server is busy right now, please try again after few minutes",
+      });
+    } finally {
+      setDeleteLoader(false);
+    }
+  };
 
   return (
     <>
@@ -110,7 +147,70 @@ const Settings = () => {
           </div>
         </div>
 
-        <div className="w-full overflow-x-auto overscroll-x-contain pb-3 lg:overflow-visible">
+        {/* Laptop and Desktop screen */}
+        <div className="lg:flex hidden justify-between items-center w-full gap-10">
+          <div className="flex justify-start items-start flex-col gap-y-2 bg-neutral-100 p-4 w-full h-46 shadow rounded-xl">
+            <div className="flex justify-between items-center w-full text-neutral-500">
+              <span className="text-xs font-semibold uppercase w-full">
+                Uploaded prescriptions
+              </span>
+
+              <ScrollText size={23} />
+            </div>
+
+            <h4 className="lg:text-4xl font-semibold tracking-tight text-neutral-900 text-xl">
+              0
+            </h4>
+
+            <span className="text-xs font-semibold w-full text-neutral-500">
+              prescriptions in repository
+            </span>
+          </div>
+
+          <div className="flex justify-start items-start flex-col gap-y-2 bg-neutral-100 p-4 w-full h-46 shadow rounded-xl">
+            <div className="flex justify-between items-center w-full text-neutral-500">
+              <span className="text-xs font-semibold uppercase w-full">
+                Allocated storage
+              </span>
+
+              <LockOpen size={23} />
+            </div>
+
+            <h4 className="lg:text-4xl font-semibold tracking-tight text-neutral-900 text-xl">
+              50 MB
+            </h4>
+
+            <span className="text-xs font-semibold w-full text-neutral-500">
+              encrypted patient vault
+            </span>
+          </div>
+
+          <div className="flex justify-start items-start flex-col gap-y-2 bg-neutral-100 p-4 w-full h-46 shadow rounded-xl">
+            <div className="flex justify-between items-center w-full text-neutral-500">
+              <span className="text-xs font-semibold uppercase w-full">
+                Remaining storage
+              </span>
+
+              <CloudCheck size={23} />
+            </div>
+
+            <h4 className="lg:text-2xl font-semibold tracking-tight text-neutral-900 text-xl">
+              50 MB
+            </h4>
+
+            <div className="w-full h-2 rounded-full bg-green-700 lg:mt-2" />
+            <span className="text-xs font-semibold w-full text-green-700">
+              100% available
+            </span>
+
+            <span className="text-xs font-semibold w-full text-neutral-400 lg:mt-5">
+              0 KB consumed of 50 MB
+            </span>
+          </div>
+        </div>
+
+        {/* Mobile screen */}
+        <div className="block lg:hidden w-full overflow-x-auto overscroll-x-contain pb-3 lg:overflow-visible">
           <div className="flex w-max min-w-full items-stretch gap-4 lg:w-full lg:gap-10">
             {/* Uploaded prescriptions */}
             <div className="flex h-46 w-65 shrink-0 flex-col items-start justify-start gap-y-2 rounded-xl bg-neutral-100 p-4 shadow lg:w-full">
@@ -193,13 +293,36 @@ const Settings = () => {
                   destructive and cannot be undone.
                 </p>
 
-                <Button
-                  className={
-                    "bg-red-600 hover:bg-red-700 text-neutral-200 hover:text-neutral-300 lg:mt-0 mt-6"
-                  }
-                >
-                  <UserRoundMinus size={23} /> Delete Account
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger
+                    render={
+                      <Button
+                        className={
+                          "bg-red-600 hover:bg-red-700 text-neutral-200 hover:text-neutral-300 lg:mt-0 mt-6"
+                        }
+                      >
+                        <UserRoundMinus size={23} /> Erase Memory
+                      </Button>
+                    }
+                  />
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Are you absolutely sure?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleAccountDelete}>
+                        {deleteLoader ? <Spinner /> : "Confirm"}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           </div>
