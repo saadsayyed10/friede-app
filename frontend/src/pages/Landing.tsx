@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import Navbar from "./Unverified/Navbar";
 import {
   Activity,
+  ArrowUpRight,
   Badge,
   BotMessageSquare,
   Calendar,
@@ -20,6 +21,7 @@ import { toast } from "@/components/ui/toast";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth, useClerk } from "@clerk/react";
 import { useAuthorization } from "@/hooks/useAuthorization";
+import { useNavigate } from "react-router-dom";
 
 const Landing = () => {
   const { signIn } = useSignIn();
@@ -28,6 +30,7 @@ const Landing = () => {
   const { clearResult } = useAuthorization();
 
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleAuthentication = async () => {
     if (!signIn) return;
@@ -112,6 +115,17 @@ const Landing = () => {
                   disabled={loading}
                 >
                   {loading ? <Spinner /> : <LogOut color="white" />} Sign Out
+                </Button>
+
+                <Button
+                  onClick={() => navigate("/friede")}
+                  className={"py-6 lg:w-min w-full"}
+                  size={"lg"}
+                  variant={"ghost"}
+                  disabled={loading}
+                >
+                  {loading ? <Spinner /> : <ArrowUpRight color="black" />}{" "}
+                  Dashboard
                 </Button>
               </div>
             ) : (
