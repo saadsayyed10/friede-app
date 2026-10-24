@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 interface Registration {
   userId: string | null;
@@ -16,29 +17,41 @@ interface Registration {
   reset: () => void;
 }
 
-export const useSignUp = create<Registration>((set) => ({
-  userId: null,
-  name: null,
-  email: null,
-  profilePictureUrl: null,
+export const useSignUp = create<Registration>()(
+  persist(
+    (set) => ({
+      userId: null,
+      name: null,
+      email: null,
+      profilePictureUrl: null,
 
-  setUserId: (userId) => {
-    set({ userId });
-  },
+      setUserId: (userId) => set({ userId }),
 
-  setName: (name) => {
-    set({ name });
-  },
+      setName: (name) => set({ name }),
 
-  setEmail: (email) => {
-    set({ email });
-  },
+      setEmail: (email) => set({ email }),
 
-  setProfilePictureUrl: (profilePictureUrl) => {
-    set({ profilePictureUrl });
-  },
+      setProfilePictureUrl: (profilePictureUrl) => set({ profilePictureUrl }),
 
-  reset: () => {
-    set({ userId: null, name: null, email: null, profilePictureUrl: null });
-  },
-}));
+      reset: () =>
+        set({
+          userId: null,
+          name: null,
+          email: null,
+          profilePictureUrl: null,
+        }),
+    }),
+    {
+      name: "signup-storage",
+      storage: createJSONStorage(() => localStorage),
+
+      // Persist only the data, not the setter functions.
+      partialize: (state) => ({
+        userId: state.userId,
+        name: state.name,
+        email: state.email,
+        profilePictureUrl: state.profilePictureUrl,
+      }),
+    },
+  ),
+);

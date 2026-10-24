@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/toast";
 import { useState } from "react";
 import { syncClerkUserAPI } from "@/api/authentication.api";
 import { Spinner } from "@/components/ui/spinner";
+import { useNavigate } from "react-router-dom";
 
 const SignUpReview = () => {
   const { signOut } = useClerk();
@@ -18,6 +19,7 @@ const SignUpReview = () => {
   const { clearResult } = useAuthorization();
 
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     await signOut({ redirectUrl: "/" });
@@ -48,6 +50,7 @@ const SignUpReview = () => {
           });
 
           reset();
+          navigate("/friede");
         })
         .catch((err) => {
           console.log(err?.response?.data.error);
