@@ -14,7 +14,7 @@ const Authorization = () => {
   const { getToken } = useAuth();
   const { signOut } = useClerk();
 
-  const { result, setResult, clearResult } = useAuthorization();
+  const { setResult, clearResult } = useAuthorization();
 
   const router = useNavigate();
 
@@ -33,19 +33,21 @@ const Authorization = () => {
     try {
       await verifyUserAPI(token!)
         .then((res) => {
+          console.log(res.data.result);
           setResult(res.data.result);
-          console.log(result);
 
-          if (result === true) router("/dashboard");
+          new Promise<void>((resolve) => setTimeout(resolve, 3000));
 
-          setTimeout(() => {}, 3000);
-
-          router("/signup/basic");
+          if (res.data.result === true) {
+            router("/friede");
+          } else {
+            router("/signup/basic");
+          }
         })
         .catch((err) => {
           toast.add({
             title: "Failed to authorize your account",
-            description: err.response.data.error,
+            description: err?.response?.data?.error,
           });
         });
     } catch (error: any) {
