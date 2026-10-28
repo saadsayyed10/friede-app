@@ -1,7 +1,8 @@
 import json
 import re
 from models.LLM import model
-from langchain_core.prompts import ChatPromptTemplate 
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.messages import HumanMessage, AIMessage
 
 def extract_json(text: str):
     """Checks if text contains valid JSON (object or list) and returns the parsed data, or None."""
@@ -37,21 +38,31 @@ User Question:
 {question}
 """
 
-prompt = ChatPromptTemplate.from_template(template)
+prompt = ChatPromptTemplate.from_messages([
+    ("system", template),
+    MessagesPlaceholder(variable_name="chat_history"),
+    ("human", "{question}")
+])
 
 chain = prompt | model
 
+chat_history = []
+
 while True:
     question = input("\nAsk your question: ")
+    if question.lower() in ["exit", "quit"]:
+        break
 
-    res = chain.invoke({"question": question})
+    res = chain.invoke({"question": question, "chat_history": chat_history})
 
     content = res.content[0]["text"] if isinstance(res.content, list) else res.content
 
     print("\nFriede:")
     print(content)
 
-    # Check if content contains valid JSON; if so, break the loop
+    chat_history.append(HumanMessage(content=question))
+    chat_history.append(AIMessage(content=content))  
+
     summary_data = extract_json(content)
     if summary_data is not None:
         print("\n[JSON summary received. Ending session.]")
