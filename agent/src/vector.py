@@ -44,3 +44,12 @@ def savePatientAllergyInformationInVectorDB(summaryData: dict):
         ids=[patientId]
     )
     print(f"Successfully saved records for {patientId} to vector DB!")
+
+# Function to delete patient's allergy data from the vector DB
+def wipePatientAllergyInformationFromVectorDB(patientId: str):
+    if not patientId:
+        print("Error: No patientId provided for deletion.")
+        return 
+    
+    vectorStore.delete(ids = patientId)
+    print(f"Successfully wiped allergy data for {patientId} from vector DB")

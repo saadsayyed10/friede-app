@@ -8,7 +8,7 @@ app = FastAPI()
 router = APIRouter()
 
 @router.post("/api/ai/allergy")
-def collectAllergyInformationController(data: ChatRequest):
+async def collectAllergyInformationController(data: ChatRequest):
     result = collectAllergyInformationService(
         question = data.question,
         patientId = data.patientId,
