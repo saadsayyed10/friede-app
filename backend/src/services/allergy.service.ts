@@ -23,7 +23,7 @@ export const deleteAllergyService = async (clerkId: string) => {
   const existingUser = await User.findOne({ clerkId });
   if (!existingUser) throw new Error("User does not exist");
 
-  await User.deleteOne({ clerkId });
+  await User.updateOne({ clerkId }, { allergies: null });
 
   const res = await axios.delete(
     `${env.AI_AGENT_SERVER}/ai/allergy/${clerkId}`,

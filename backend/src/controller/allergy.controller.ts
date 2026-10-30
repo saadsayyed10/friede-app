@@ -36,28 +36,26 @@ export const updateAllergyController = async (req: Request, res: Response) => {
 };
 
 export const deleteAllergyController = async (req: Request, res: Response) => {
-  const { userId } = req.query;
+  // const { userId } = req.query;
 
   try {
-    // const { isAuthenticated, userId } = getAuth(req);
-    // if (!isAuthenticated) {
-    //   console.log("Unauthorized: User must be logged in to sync");
-    //   return res.status(401).json({
-    //     success: false,
-    //     error: "Unauthorized: User must be logged in to sync",
-    //   });
-    // }
-    // if (!userId) {
-    //   console.log("Clerk ID is required to sync");
-    //   return res.status(403).json({
-    //     success: false,
-    //     error: "Clerk ID is required to sync",
-    //   });
-    // }
+    const { isAuthenticated, userId } = getAuth(req);
+    if (!isAuthenticated) {
+      console.log("Unauthorized: User must be logged in to sync");
+      return res.status(401).json({
+        success: false,
+        error: "Unauthorized: User must be logged in to sync",
+      });
+    }
+    if (!userId) {
+      console.log("Clerk ID is required to sync");
+      return res.status(403).json({
+        success: false,
+        error: "Clerk ID is required to sync",
+      });
+    }
 
-    const allergy = await allergyServices.deleteAllergyService(
-      userId as string,
-    );
+    const allergy = await allergyServices.deleteAllergyService(userId);
 
     res.status(200).json({ success: true, message: allergy });
   } catch (error: any) {
