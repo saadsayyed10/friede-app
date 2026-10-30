@@ -38,6 +38,12 @@ def savePatientAllergyInformationInVectorDB(summaryData: dict):
         }
     )
 
+    # Delete existing record first to prevent duplicates
+    try:
+        vectorStore.delete(ids=[patientId])
+    except Exception:
+        pass # Ignore if it didn't exist yet
+
     # Add to Chroma DB as patient ID being the unique key
     vectorStore.add_documents(
         documents=[doc],
@@ -50,6 +56,12 @@ def wipePatientAllergyInformationFromVectorDB(patientId: str):
     if not patientId:
         print("Error: No patientId provided for deletion.")
         return 
+
+    existingRecords = vectorStore.get(ids=[patientId])
+    if not existingRecords or len(existingRecords.get("ids", [])) == 0:
+        print(f"Error: Patient ID {patientId} not found in vector DB.")
+        return {"success": False, "message": f"Patient ID {patientId} not found"}
     
-    vectorStore.delete(ids = patientId)
+    vectorStore.delete(ids=[patientId])
     print(f"Successfully wiped allergy data for {patientId} from vector DB")
+    return {"success": True, "message": f"Successfully wiped allergy data for {patientId} from vector DB"}
