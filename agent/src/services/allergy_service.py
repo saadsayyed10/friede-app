@@ -12,7 +12,7 @@ def collectAllergyInformationService(question: str, patientId: str, chatHistory:
         if turn["role"] == "human":
             formattedHistory.append(HumanMessage(content=turn["content"]))
         else:
-            formattedHistory.append(AIMessagecontent=turn["content"])
+            formattedHistory.append(AIMessage(content=turn["content"]))
     
     prompt = ChatPromptTemplate.from_messages([
         ("system", allergyTemplate),

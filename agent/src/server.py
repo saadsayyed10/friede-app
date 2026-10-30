@@ -1,12 +1,28 @@
+from fastapi import FastAPI, APIRouter
+
 from services.allergy_service import collectAllergyInformationService
 from vector import savePatientAllergyInformationInVectorDB
+from type_class.allergy_types import ChatRequest
 
-chatHistory = []
+app = FastAPI()
+router = APIRouter()
 
-question = input("\nAsk me something:\n")
+@router.post("/api/ai/allergy")
+def collectAllergyInformationController(data: ChatRequest):
+    result = collectAllergyInformationService(
+        question = data.question,
+        patientId = data.patientId,
+        chatHistory = data.chatHistory,
+    )
 
-allergyData = collectAllergyInformationService(question, "patient123", chatHistory)
-if allergyData is not None:
-    savePatientAllergyInformationInVectorDB(allergyData)
-else:
-    print("Session ended without generating a JSON summary.")
+    if result["isCompleted"] and result["summaryData"]:
+        savePatientAllergyInformationInVectorDB(result["summaryData"])
+
+    return {
+        "response": result["response"],
+        "isCompleted": result["isCompleted"],
+        "summaryData": result["summaryData"],
+        "chatHistory": result["chatHistory"]
+    }
+
+app.include_router(router)
