@@ -39,7 +39,7 @@ export const syncClerkUserController = async (req: Request, res: Response) => {
     }
 
     const user = await syncClerkUserService(
-      userId as string,
+      userId,
       name,
       email,
       allergies,
