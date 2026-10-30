@@ -5,3 +5,4 @@ class ChatRequest(BaseModel):
     question: str
     patientId: str
     chatHistory: List[Dict[str, str]] = []
+

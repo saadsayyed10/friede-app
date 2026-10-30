@@ -1,7 +1,7 @@
 from fastapi import FastAPI, APIRouter
 
 from services.allergy_service import collectAllergyInformationService
-from vector import savePatientAllergyInformationInVectorDB
+from vector import savePatientAllergyInformationInVectorDB, wipePatientAllergyInformationFromVectorDB
 from type_class.allergy_types import ChatRequest
 
 app = FastAPI()
@@ -24,5 +24,15 @@ async def collectAllergyInformationController(data: ChatRequest):
         "summaryData": result["summaryData"],
         "chatHistory": result["chatHistory"]
     }
+
+@router.delete("/api/ai/allergy/{patientId}")
+async def wipeAllergyInformationController(patientId: str):
+    result = wipePatientAllergyInformationFromVectorDB(patientId)
+
+    return {
+        "success": True,
+        "message": result
+    }
+
 
 app.include_router(router)
