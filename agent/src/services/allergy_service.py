@@ -5,46 +5,46 @@ from models.LLM import LLM
 from templates.allery_template import allergyTemplate
 from lib.extract_json import extractJson
 
-def collectAllergyInformationService(patientId: str):
-    # A list to store informations of all chat threads in a loop
-    chatHistory = []
+def collectAllergyInformationService(question: str, patientId: str, chatHistory: list):
+    formattedHistory = []
 
-    # Prompt to include the chat history
+    for turn in chatHistory:
+        if turn["role"] == "human":
+            formattedHistory.append(HumanMessage(content=turn["content"]))
+        else:
+            formattedHistory.append(AIMessagecontent=turn["content"])
+    
     prompt = ChatPromptTemplate.from_messages([
         ("system", allergyTemplate),
         MessagesPlaceholder(variable_name="chatHistory"),
         ("human", "{question}")
     ])
 
-    # Chain to create pipeline of prompt with the LLM
     chain = prompt | LLM
 
-    # Run the loop
-    while True:
-        # Question from user as input
-        question = input("\nAsk your question: (Press 'q' to exit)\n")
-        if question.lower() in ["exit", "quit"]: # Quit converstion if user types exit or quit
-            break
+    res = chain.invoke({
+        "patientId": patientId,
+        "question": question,
+        "chatHistory": chatHistory
+    })
 
-        # Execution
-        res = chain.invoke({
-            "patientId": patientId,
-            "question": question,
-            "chatHistory": chatHistory
-        })
+    content = res.content[0]["text"]
 
-        content = res.content[0]["text"]
-
-        print("\nFriede:\n")
-        print(content)
+    print("\nFriede:\n")
+    print(content)
 
         
-        # Check if content contains valid JSON; if so, return the extracted data
-        summaryData = extractJson(content)
-        if summaryData is not None:
-            print("\n[JSON summary received. Ending session.]")
-            return summaryData
+    summaryData = extractJson(content)
+    isCompleted = summaryData is not None
 
-        # Append the turn to chat history so the model remembers it next time
-        chatHistory.append(HumanMessage(content=question))   
-        chatHistory.append(AIMessage(content=content))
+    updatedHistory = chatHistory + [
+        {"role": "human", "content": question},
+        {"role": "ai", "content": content}
+    ]
+
+    return {
+        "response": content,
+        "isCompleted": isCompleted,
+        "summaryData": summaryData,
+        "chatHistory": updatedHistory
+    }
