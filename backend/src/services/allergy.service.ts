@@ -1,4 +1,3 @@
-import axios from "axios";
 import User from "../models/user.model";
 
 export const updateAllergyService = async (
@@ -14,5 +13,6 @@ export const updateAllergyService = async (
   const existingUser = await User.findOne({ clerkId });
   if (!existingUser) throw new Error("User does not exist");
 
-  await axios.delete();
+  const updateAllergy = await User.updateOne({ clerkId }, { allergies });
+  return updateAllergy;
 };
