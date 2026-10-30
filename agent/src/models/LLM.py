@@ -4,6 +4,6 @@ load_dotenv()
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 
-model = ChatGoogleGenerativeAI(
+LLM = ChatGoogleGenerativeAI(
     model="gemini-3.5-flash-lite",
 )
