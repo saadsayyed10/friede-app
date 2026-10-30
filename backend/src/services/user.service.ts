@@ -1,15 +1,5 @@
 import User from "../models/user.model";
 
-type AllergyType = {
-  allergies: [
-    {
-      allergy: string;
-      cause: string;
-      risk: "Low" | "Moderate" | "High";
-    },
-  ];
-};
-
 export const syncClerkUserService = async (
   clerkId: string,
   name: string,
