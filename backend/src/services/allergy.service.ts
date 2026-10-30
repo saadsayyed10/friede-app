@@ -23,7 +23,7 @@ export const deleteAllergyService = async (clerkId: string) => {
   const existingUser = await User.findOne({ clerkId });
   if (!existingUser) throw new Error("User does not exist");
 
-  const deleteAllergy = await User.deleteOne({ clerkId });
+  await User.deleteOne({ clerkId });
 
   const res = await axios.delete(
     `${env.AI_AGENT_SERVER}/ai/allergy/${clerkId}`,
@@ -31,5 +31,5 @@ export const deleteAllergyService = async (clerkId: string) => {
 
   const vectorDataDelete = res.data.message.message;
 
-  return { deleteAllergy, vectorDataDelete };
+  return vectorDataDelete;
 };
