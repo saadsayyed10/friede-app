@@ -17,6 +17,8 @@ export const syncClerkUserController = async (req: Request, res: Response) => {
       .json({ success: false, error: "Name and Email are required to sync" });
   }
 
+  // const { userId } = req.query;
+
   try {
     const { isAuthenticated, userId } = getAuth(req);
 
@@ -37,7 +39,7 @@ export const syncClerkUserController = async (req: Request, res: Response) => {
     }
 
     const user = await syncClerkUserService(
-      userId,
+      userId as string,
       name,
       email,
       allergies,
