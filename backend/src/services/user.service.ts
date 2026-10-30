@@ -1,15 +1,38 @@
 import User from "../models/user.model";
 
+type AllergyType = {
+  allergies: [
+    {
+      allergy: string;
+      cause: string;
+      risk: "Low" | "Moderate" | "High";
+    },
+  ];
+};
+
 export const syncClerkUserService = async (
   clerkId: string,
   name: string,
   email: string,
+  allergies: [
+    {
+      allergy: string;
+      cause: string;
+      risk: "Low" | "Moderate" | "High";
+    },
+  ],
   profilePictureUrl: string,
 ) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) throw new Error("User account already exists in Friede");
 
-  const user = await User.create({ clerkId, name, email, profilePictureUrl });
+  const user = await User.create({
+    clerkId,
+    name,
+    email,
+    allergies,
+    profilePictureUrl,
+  });
   return user;
 };
 
