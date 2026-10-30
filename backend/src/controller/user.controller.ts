@@ -9,7 +9,7 @@ import {
 } from "../services/user.service";
 
 export const syncClerkUserController = async (req: Request, res: Response) => {
-  const { name, email, profilePictureUrl } = req.body;
+  const { name, email, allergies, profilePictureUrl } = req.body;
   if (!name || !email) {
     console.log("Name and Email are required to sync");
     return res
@@ -40,6 +40,7 @@ export const syncClerkUserController = async (req: Request, res: Response) => {
       userId,
       name,
       email,
+      allergies,
       profilePictureUrl,
     );
     res.status(201).json({
