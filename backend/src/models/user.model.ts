@@ -16,10 +16,17 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: true,
     },
-    allergies: {
-      type: String,
-      required: false,
-    },
+    allergies: [
+      {
+        allergy: { type: String, required: false },
+        cause: { type: String, required: false },
+        risk: {
+          type: String,
+          enum: ["Low", "Moderate", "High"],
+          required: false,
+        },
+      },
+    ],
     profilePictureUrl: {
       type: String,
       required: false,
