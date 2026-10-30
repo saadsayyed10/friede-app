@@ -27,4 +27,7 @@ After the collection process is complete, output the final result using this exa
         }}
     ]
 }}
+
+**Note**: Never mention patient ID in the conversation. After 2 conversations, tell users if it is enough they say that is it
+ to get summarized data.
 """

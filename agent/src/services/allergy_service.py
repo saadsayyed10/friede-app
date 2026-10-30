@@ -12,6 +12,7 @@ def collectAllergyInformationService(patientId: str):
     # Prompt to include the chat history
     prompt = ChatPromptTemplate.from_messages([
         ("system", allergyTemplate),
+        MessagesPlaceholder(variable_name="chatHistory"),
         ("human", "{question}")
     ])
 
@@ -37,12 +38,13 @@ def collectAllergyInformationService(patientId: str):
         print("\nFriede:\n")
         print(content)
 
+        
+        # Check if content contains valid JSON; if so, return the extracted data
+        summaryData = extractJson(content)
+        if summaryData is not None:
+            print("\n[JSON summary received. Ending session.]")
+            return summaryData
+
         # Append the turn to chat history so the model remembers it next time
         chatHistory.append(HumanMessage(content=question))   
         chatHistory.append(AIMessage(content=content))
-
-        # Check if content contains valid JSON; if so, break the loop
-        summaryData = extractJson()
-        if summaryData is not None:
-            print("\n[JSON summary received. Ending session.]")
-            break
