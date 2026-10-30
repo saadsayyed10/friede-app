@@ -4,6 +4,7 @@ from langchain_core.messages import AIMessage, HumanMessage
 from models.LLM import LLM
 from templates.allery_template import allergyTemplate
 from lib.extract_json import extractJson
+from vector import savePatientAllergyInformationInVectorDB
 
 def collectAllergyInformationService(patientId: str):
     # A list to store informations of all chat threads in a loop
@@ -44,6 +45,9 @@ def collectAllergyInformationService(patientId: str):
         if summaryData is not None:
             print("\n[JSON summary received. Ending session.]")
             return summaryData
+
+        # Save summarized data into vector DB
+        savePatientAllergyInformationInVectorDB(summaryData)
 
         # Append the turn to chat history so the model remembers it next time
         chatHistory.append(HumanMessage(content=question))   
