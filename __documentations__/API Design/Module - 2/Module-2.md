@@ -18,13 +18,20 @@
 1. Once the patient is **authenticated** while **signing up** to the app on the **`/signup/basic`**, get the **clerk ID** from the **frontend** in a state via custom **hook.**
 2. Redirect to **`/signup/allergies`** , patient will be asked to elaborate about the allergies from any medicines that they are taking or my food or any other substances by the **AI agent**.
 3. Once the patient is done explaining and sends the reply to **AI agent**:
-   1. **Status 200** → from **frontend** it goes directly to **fastAPI AI server `/api/ai/allergies` .**
-   2. **Status 500** → Throw an error if there are any issues that stops **AI server** to respond.
-4. After getting reply from the patient, **chatbot** works in a loop and cross questions, until patient says “that is it” or similar to end the conversation.
-5. Once the **chatbot** get’s the reply as “That’s it” or similar:
-   1. **Status 200** → **AI server** saves all the information in the **VectorDB** with the **clerk ID** as the unique key and returns a structured **JSON** summary.
-   2. **Status 400** → Throw an error if there exists the same unique key and tries to overwrite the information in the **VectorDB**.
-   3. **Status 500** → Throw an error if there are any issues that stops **AI server** to respond.
+   1. From **frontend** it goes directly to **FastAPI AI server `/api/ai/allergy` .**
+      1. **question, clerk ID as patientId and chatHistory** is sent as the **body** in **post method**.
+         1. **Status 200** **→ FastAPI AI server** responds with **response, isCompleted, summaryData and chatHistory**.
+         2. In **frontend** we do not stop the chatting process and redirect to **`/signup/review`** until the **summaryData** is **not null** and **isCompleted** is **True**.
+         3. Start with **chatHistory** state as an empty array, then keep updating with newly returned **chatHistory** array until **isCompleted** is true.
+         4. Once **isCompleted** is returned true that means **summaryData** isn’t null anymore, so get the **allergies** array field from **summaryData**, update it with **setAllergies** state**.**
+         5. The data is also saved in **Chroma (vector database)**.
+         6. Redirect to **`/signup/review` ,** review all the information of the user and hit **Sign Up** button.
+         7. **Status 500** → Throw appropriate error message**.**
+         8. **Status 403** → Throw appropriate error message if **Gemini API** has any issues**.**
+   2. This will use all the states holding the values and hit the **business logic server** endpoint to register the user account.
+      1. **Status 201** → User information get’s saved to **MongoDB.**
+      2. **Status 500** → Throw appropriate error message.
+      3. **Status 401** → Throw appropriate error message if user is not **authenticated**.
 
 ## 2.2 - Save allergies JSON data to MongoDB.
 
