@@ -7,6 +7,8 @@ import { toast } from "@/components/ui/toast";
 import { allergyInformationExtractionAIAgentAPI } from "@/api/allergy.api";
 import { useSignUp } from "@/hooks/useSignUp";
 import { Spinner } from "@/components/ui/spinner";
+import { useAllergy } from "@/hooks/useAllergy";
+import { useNavigate } from "react-router-dom";
 
 interface ChatMessage {
   role: "human" | "ai";
@@ -19,11 +21,13 @@ const SignUpAllergy = () => {
   const { setChatHistory } = useChatHistory();
   const chatHistory = useChatHistory((state) => state.chatHistory);
   const { userId: patientId } = useSignUp();
+  const { setAllergies } = useAllergy();
 
   const [question, setQuestion] = useState<string>("");
   const [dataMimic, setDataMimic] = useState<ChatMessage[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleInput = () => {
     const textarea = textareaRef.current;
@@ -66,6 +70,12 @@ const SignUpAllergy = () => {
             content: res.data.response,
           };
           setDataMimic((prev) => [...prev, newAIMessage]);
+
+          if (res.data.isCompleted === true) {
+            navigate("/signup/review");
+
+            setAllergies(res.data.summaryData.allergies);
+          }
         })
         .catch((err) => {
           toast.add({

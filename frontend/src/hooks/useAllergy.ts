@@ -20,9 +20,9 @@ interface Allergy {
         risk: string;
       },
     ],
-
-    reset: () => void,
   ) => void;
+
+  reset: () => void;
 }
 
 export const useAllergy = create<Allergy>()(
