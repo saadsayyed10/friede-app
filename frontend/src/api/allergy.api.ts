@@ -1,7 +1,7 @@
 import axios from "axios";
 import { aiApiUrl } from "./apiUrl";
 
-export const allergyInformationExtractionAIAgent = async (
+export const allergyInformationExtractionAIAgentAPI = async (
   question: string,
   patientId: string,
   chatHistory: [],

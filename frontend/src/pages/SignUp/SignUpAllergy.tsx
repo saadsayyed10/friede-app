@@ -1,10 +1,22 @@
 import Navbar from "../Unverified/Navbar";
 import { Bot, Check, MilkOff, SendHorizonal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { useAllergy } from "@/hooks/useAllergy";
+import { toast } from "@/components/ui/toast";
+import { allergyInformationExtractionAIAgentAPI } from "@/api/allergy.api";
+import { useSignUp } from "@/hooks/useSignUp";
+import { Spinner } from "@/components/ui/spinner";
 
 const SignUpAllergy = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const { chatHistory } = useAllergy();
+  const { userId: patientId } = useSignUp();
+
+  const [question, setQuestion] = useState<string>("");
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleInput = () => {
     const textarea = textareaRef.current;
@@ -14,23 +26,52 @@ const SignUpAllergy = () => {
     }
   };
 
-  const dataMimic = [
-    {
-      role: "human",
-      content:
-        " Let's talk about your allergies. Do you have any known allergies to medicines, foods or orther substances? You can share as much details as you know.",
-    },
-    {
-      role: "ai",
-      content:
-        " Let's talk about your allergies. Do you have any known allergies to medicines, foods or orther substances? You can share as much details as you know.",
-    },
-    {
-      role: "human",
-      content:
-        " Let's talk about your allergies. Do you have any known allergies to medicines, foods or orther substances? You can share as much details as you know.",
-    },
-  ];
+  const handleSendQuestion = async () => {
+    setLoading(true);
+    try {
+      await allergyInformationExtractionAIAgentAPI(
+        question,
+        patientId!,
+        chatHistory,
+      )
+        .then((res) => {
+          console.log(question);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          toast.add({
+            title: "Failed to chat with Friede",
+            description: err?.response?.data?.error,
+          });
+        });
+    } catch (error: any) {
+      toast.add({
+        title: "Friede is not available right now",
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+      setQuestion("");
+    }
+  };
+
+  // const dataMimic = [
+  //   {
+  //     role: "human",
+  //     content:
+  //       " Let's talk about your allergies. Do you have any known allergies to medicines, foods or orther substances? You can share as much details as you know.",
+  //   },
+  //   {
+  //     role: "ai",
+  //     content:
+  //       " Let's talk about your allergies. Do you have any known allergies to medicines, foods or orther substances? You can share as much details as you know.",
+  //   },
+  //   {
+  //     role: "human",
+  //     content:
+  //       " Let's talk about your allergies. Do you have any known allergies to medicines, foods or orther substances? You can share as much details as you know.",
+  //   },
+  // ];
 
   return (
     <>
@@ -81,7 +122,7 @@ const SignUpAllergy = () => {
             </div>
           </div>
 
-          {dataMimic.map((chats, idx) => (
+          {/* {dataMimic.map((chats, idx) => (
             <div
               key={idx}
               className="flex justify-center items-center w-full flex-col gap-y-8"
@@ -104,7 +145,7 @@ const SignUpAllergy = () => {
                 </div>
               </div>
             </div>
-          ))}
+          ))} */}
         </div>
       </div>
 
@@ -114,6 +155,8 @@ const SignUpAllergy = () => {
             <textarea
               ref={textareaRef}
               onInput={handleInput}
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
               rows={1}
               className="w-full resize-none overflow-y-auto max-h-37.5 lg:py-2 py-1 px-3 bg-green-100/60 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-600 text-sm lg:text-base"
               placeholder="Type your allergy details or corrections (e.g., 'Also sensitive to Suifa')..."
@@ -121,8 +164,10 @@ const SignUpAllergy = () => {
             <Button
               size={"lg"}
               className={"bg-green-700 hover:bg-green-800 mb-0.5"}
+              onClick={handleSendQuestion}
+              disabled={loading}
             >
-              <SendHorizonal color="white" />
+              {loading ? <Spinner /> : <SendHorizonal color="white" />}
             </Button>
           </div>
         </div>
