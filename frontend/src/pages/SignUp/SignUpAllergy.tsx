@@ -18,7 +18,7 @@ interface ChatMessage {
 const SignUpAllergy = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { setChatHistory } = useChatHistory();
+  const { setChatHistory, reset } = useChatHistory();
   const chatHistory = useChatHistory((state) => state.chatHistory);
   const { userId: patientId } = useSignUp();
   const { setAllergies } = useAllergy();
@@ -75,6 +75,7 @@ const SignUpAllergy = () => {
             navigate("/signup/review");
 
             setAllergies(res.data.summaryData.allergies);
+            reset();
           }
         })
         .catch((err) => {

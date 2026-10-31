@@ -1,31 +1,19 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-interface Allergy {
-  allergies:
-    | [
-        {
-          allergy: string;
-          cause: string;
-          risk: string;
-        },
-      ]
-    | [];
+export interface AllergyItem {
+  allergy: string;
+  cause: string;
+  risk: string;
+}
 
-  setAllergies: (
-    allergies: [
-      {
-        allergy: string;
-        cause: string;
-        risk: string;
-      },
-    ],
-  ) => void;
-
+interface AllergyState {
+  allergies: AllergyItem[];
+  setAllergies: (allergies: AllergyItem[]) => void;
   reset: () => void;
 }
 
-export const useAllergy = create<Allergy>()(
+export const useAllergy = create<AllergyState>()(
   persist(
     (set) => ({
       allergies: [],

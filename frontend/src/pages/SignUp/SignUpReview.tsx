@@ -1,22 +1,24 @@
 import { Button } from "@/components/ui/button";
 import Footer from "../Unverified/Footer";
 import Navbar from "../Unverified/Navbar";
-import { Check, Eye, ShieldCheck } from "lucide-react";
+import { Check, Eye, Shield, ShieldCheck } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useSignUp } from "@/hooks/useSignUp";
 import { useAuthorization } from "@/hooks/useAuthorization";
 import { getToken, useClerk } from "@clerk/react";
 import { toast } from "@/components/ui/toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { syncClerkUserAPI } from "@/api/authentication.api";
 import { Spinner } from "@/components/ui/spinner";
 import { useNavigate } from "react-router-dom";
+import { useAllergy } from "@/hooks/useAllergy";
 
 const SignUpReview = () => {
   const { signOut } = useClerk();
   const { userId, name, email, profilePictureUrl, reset } = useSignUp();
   const { clearResult } = useAuthorization();
+  const { allergies, reset: allergyReset } = useAllergy();
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -40,7 +42,14 @@ const SignUpReview = () => {
     try {
       const token = await getToken();
 
-      await syncClerkUserAPI(userId!, name!, email!, profilePictureUrl!, token!)
+      await syncClerkUserAPI(
+        userId!,
+        name!,
+        email!,
+        allergies,
+        profilePictureUrl!,
+        token!,
+      )
         .then((res) => {
           console.log(res.data.message);
 
@@ -50,6 +59,7 @@ const SignUpReview = () => {
           });
 
           reset();
+          allergyReset();
           navigate("/friede");
         })
         .catch((err) => {
@@ -69,6 +79,10 @@ const SignUpReview = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    console.log("Allergies: " + allergies.length);
+  }, []);
 
   return (
     <>
@@ -140,6 +154,41 @@ const SignUpReview = () => {
           </Label>
           <Input className="lg:w-80 w-full" disabled value={email!} />
         </div>
+        {allergies.length !== 0 && (
+          <div className="flex justify-start items-start flex-col gap-y-2 w-full">
+            <Label>Summary of your Allergies</Label>
+            <div className="flex justify-start items-start flex-col w-160 bg-green-100/50 rounded-xl border shadow lg:gap-y-6 p-4">
+              <div className="flex justify-between items-center w-full">
+                <h6 className="font-semibold text-sm flex items-center gap-x-1">
+                  <Shield size={16} color="green" fill="green" /> Identified
+                  Allergens for Clinical Record
+                </h6>
+                <span className="bg-green-500 px-2 py-1 text-green-800 text-xs rounded-full font-semibold">
+                  {allergies.length} items Structured
+                </span>
+              </div>
+
+              {allergies.map((data, idx) => (
+                <div
+                  key={idx}
+                  className="shadow rounded-xl bg-neutral-50 flex justify-start items-start flex-col gap-y-2 w-full px-4 py-2"
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <h6 className="font-semibold text-lg">
+                      {data.allergy} Allergen
+                    </h6>
+                    <span
+                      className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold`}
+                    >
+                      {data.risk} Risk
+                    </span>
+                  </div>
+                  <h6 className="lg:text-sm text-neutral-600">{data.cause}</h6>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex justify-start items-start lg:flex-row flex-col gap-y-2 lg:gap-x-4 w-full">
           <Button

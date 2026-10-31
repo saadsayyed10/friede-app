@@ -1,10 +1,12 @@
 import axios from "axios";
 import { apiUrl } from "./apiUrl";
+import type { AllergyItem } from "@/hooks/useAllergy";
 
 export const syncClerkUserAPI = async (
   userId: string,
   name: string,
   email: string,
+  allergies: AllergyItem[],
   profilePictureUrl: string,
   token: string,
 ) => {
@@ -14,6 +16,7 @@ export const syncClerkUserAPI = async (
       userId,
       name,
       email,
+      allergies,
       profilePictureUrl,
     },
     {
