@@ -2,45 +2,49 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 interface Allergy {
-  chatHistory:
+  allergies:
     | [
         {
-          role: "human" | "ai";
-          content: string;
+          allergy: string;
+          cause: string;
+          risk: string;
         },
       ]
     | [];
-  setChatHistory: (
-    chatHistory: [
+
+  setAllergies: (
+    allergies: [
       {
-        role: "human" | "ai";
-        content: string;
+        allergy: string;
+        cause: string;
+        risk: string;
       },
     ],
-  ) => void;
 
-  reset: () => void;
+    reset: () => void,
+  ) => void;
 }
 
 export const useAllergy = create<Allergy>()(
   persist(
     (set) => ({
-      chatHistory: [],
+      allergies: [],
 
-      setChatHistory: (chatHistory) => {
-        set({ chatHistory });
+      setAllergies: (allergies) => {
+        set({ allergies });
       },
 
       reset: () => {
-        set({ chatHistory: [] });
+        set({ allergies: [] });
       },
     }),
     {
-      name: "allergy-storage",
+      name: "allergies-storage",
       storage: createJSONStorage(() => localStorage),
 
+      // Persist only the data, not the setter functions.
       partialize: (state) => ({
-        chatHistory: state.chatHistory,
+        allergies: state.allergies,
       }),
     },
   ),

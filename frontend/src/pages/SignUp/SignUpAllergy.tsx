@@ -2,7 +2,7 @@ import Navbar from "../Unverified/Navbar";
 import { Bot, Check, MilkOff, SendHorizonal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
-import { useAllergy } from "@/hooks/useAllergy";
+import { useChatHistory } from "@/hooks/useChatHistory";
 import { toast } from "@/components/ui/toast";
 import { allergyInformationExtractionAIAgentAPI } from "@/api/allergy.api";
 import { useSignUp } from "@/hooks/useSignUp";
@@ -16,8 +16,8 @@ interface ChatMessage {
 const SignUpAllergy = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { setChatHistory, reset } = useAllergy();
-  const chatHistory = useAllergy((state) => state.chatHistory);
+  const { setChatHistory } = useChatHistory();
+  const chatHistory = useChatHistory((state) => state.chatHistory);
   const { userId: patientId } = useSignUp();
 
   const [question, setQuestion] = useState<string>("");
@@ -59,10 +59,6 @@ const SignUpAllergy = () => {
         chatHistory,
       )
         .then((res) => {
-          console.log("Human: " + question);
-          console.log("AI: " + res.data.response);
-          console.log(res.data);
-
           setChatHistory(res.data.chatHistory);
 
           const newAIMessage: ChatMessage = {
@@ -91,10 +87,6 @@ const SignUpAllergy = () => {
   useEffect(() => {
     console.log("Chat history content: " + chatHistory.length);
   }, [chatHistory]);
-
-  useEffect(() => {
-    reset();
-  }, []);
 
   return (
     <>
