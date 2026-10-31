@@ -4,7 +4,7 @@ import { aiApiUrl } from "./apiUrl";
 export const allergyInformationExtractionAIAgentAPI = async (
   question: string,
   patientId: string,
-  chatHistory: [],
+  chatHistory: any,
 ) => {
   return axios.post(`${aiApiUrl}/ai/allergy`, {
     question,

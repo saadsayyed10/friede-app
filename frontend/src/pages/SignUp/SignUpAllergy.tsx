@@ -1,20 +1,27 @@
 import Navbar from "../Unverified/Navbar";
 import { Bot, Check, MilkOff, SendHorizonal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAllergy } from "@/hooks/useAllergy";
 import { toast } from "@/components/ui/toast";
 import { allergyInformationExtractionAIAgentAPI } from "@/api/allergy.api";
 import { useSignUp } from "@/hooks/useSignUp";
 import { Spinner } from "@/components/ui/spinner";
 
+interface ChatMessage {
+  role: "human" | "ai";
+  content: string;
+}
+
 const SignUpAllergy = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const { chatHistory } = useAllergy();
+  const { setChatHistory, reset } = useAllergy();
+  const chatHistory = useAllergy((state) => state.chatHistory);
   const { userId: patientId } = useSignUp();
 
   const [question, setQuestion] = useState<string>("");
+  const [dataMimic, setDataMimic] = useState<ChatMessage[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -27,7 +34,24 @@ const SignUpAllergy = () => {
   };
 
   const handleSendQuestion = async () => {
+    if (!question.trim()) {
+      toast.add({
+        title: "No question asked",
+        description:
+          "In order to continue with the converstion, please ask a question",
+      });
+
+      return;
+    }
+
+    const currentQuestion = question;
     setLoading(true);
+
+    const newHumanMessage: ChatMessage = {
+      role: "human",
+      content: currentQuestion,
+    };
+    setDataMimic((prev) => [...prev, newHumanMessage]);
     try {
       await allergyInformationExtractionAIAgentAPI(
         question,
@@ -35,8 +59,17 @@ const SignUpAllergy = () => {
         chatHistory,
       )
         .then((res) => {
-          console.log(question);
+          console.log("Human: " + question);
+          console.log("AI: " + res.data.response);
           console.log(res.data);
+
+          setChatHistory(res.data.chatHistory);
+
+          const newAIMessage: ChatMessage = {
+            role: "ai",
+            content: res.data.response,
+          };
+          setDataMimic((prev) => [...prev, newAIMessage]);
         })
         .catch((err) => {
           toast.add({
@@ -55,23 +88,13 @@ const SignUpAllergy = () => {
     }
   };
 
-  // const dataMimic = [
-  //   {
-  //     role: "human",
-  //     content:
-  //       " Let's talk about your allergies. Do you have any known allergies to medicines, foods or orther substances? You can share as much details as you know.",
-  //   },
-  //   {
-  //     role: "ai",
-  //     content:
-  //       " Let's talk about your allergies. Do you have any known allergies to medicines, foods or orther substances? You can share as much details as you know.",
-  //   },
-  //   {
-  //     role: "human",
-  //     content:
-  //       " Let's talk about your allergies. Do you have any known allergies to medicines, foods or orther substances? You can share as much details as you know.",
-  //   },
-  // ];
+  useEffect(() => {
+    console.log("Chat history content: " + chatHistory.length);
+  }, [chatHistory]);
+
+  useEffect(() => {
+    reset();
+  }, []);
 
   return (
     <>
@@ -122,7 +145,7 @@ const SignUpAllergy = () => {
             </div>
           </div>
 
-          {/* {dataMimic.map((chats, idx) => (
+          {dataMimic.map((chats, idx) => (
             <div
               key={idx}
               className="flex justify-center items-center w-full flex-col gap-y-8"
@@ -145,7 +168,7 @@ const SignUpAllergy = () => {
                 </div>
               </div>
             </div>
-          ))} */}
+          ))}
         </div>
       </div>
 

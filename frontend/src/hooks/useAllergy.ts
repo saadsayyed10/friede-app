@@ -2,8 +2,22 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 interface Allergy {
-  chatHistory: [];
-  setChatHistory: (chatHistory: []) => void;
+  chatHistory:
+    | [
+        {
+          role: "human" | "ai";
+          content: string;
+        },
+      ]
+    | [];
+  setChatHistory: (
+    chatHistory: [
+      {
+        role: "human" | "ai";
+        content: string;
+      },
+    ],
+  ) => void;
 
   reset: () => void;
 }
