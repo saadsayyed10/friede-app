@@ -34,7 +34,7 @@ const SignUpBasic = () => {
     setEmail(user?.emailAddresses[0].emailAddress!);
     setProfilePictureUrl(user?.imageUrl!);
 
-    navigate("/signup/review");
+    navigate("/signup/allergy");
   };
 
   return (
