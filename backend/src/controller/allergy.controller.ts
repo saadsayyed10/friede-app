@@ -24,12 +24,10 @@ export const updateAllergyController = async (req: Request, res: Response) => {
       });
     }
 
-    const allergy = await allergyServices.updateAllergyService(
-      userId,
-      allergies,
-    );
+    const { updateAllergy: allergy, vectorDataDelete } =
+      await allergyServices.updateAllergyService(userId, allergies);
 
-    res.status(200).json({ success: true, allergy });
+    res.status(200).json({ success: true, allergy, message: vectorDataDelete });
   } catch (error: any) {
     return res.status(500).json({ success: false, error: error.message });
   }
