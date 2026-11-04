@@ -1,12 +1,35 @@
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "@/components/ui/toast";
+import { useAllergy } from "@/hooks/useAllergy";
+import { useSignUp } from "@/hooks/useSignUp";
 import { useClerk } from "@clerk/react";
 import { Bell, LogOut } from "lucide-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { signOut } = useClerk();
+  const { reset: allergyReset } = useAllergy();
+  const { reset: userReset } = useSignUp();
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleSignOut = async () => {
-    await signOut({ redirectUrl: "/" });
+    setLoading(true);
+    try {
+      userReset();
+      allergyReset();
+
+      new Promise<void>((resolve) => setTimeout(resolve, 3000));
+
+      await signOut({ redirectUrl: "/" });
+    } catch (error: any) {
+      toast.add({
+        description: error.message,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,7 +53,7 @@ const Navbar = () => {
       <div className="flex lg:hidden justify-end items-end w-full gap-x-4">
         <Bell size={23} color="gray" />
         <span onClick={handleSignOut}>
-          <LogOut size={23} color="gray" />
+          {loading ? <Spinner /> : <LogOut size={23} color="gray" />}
         </span>
       </div>
     </div>
