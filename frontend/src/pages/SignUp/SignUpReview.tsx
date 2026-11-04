@@ -157,13 +157,13 @@ const SignUpReview = () => {
         {allergies.length !== 0 && (
           <div className="flex justify-start items-start flex-col gap-y-2 w-full">
             <Label>Summary of your Allergies</Label>
-            <div className="flex justify-start items-start flex-col w-160 bg-green-100/50 rounded-xl border shadow lg:gap-y-6 p-4">
+            <div className="flex justify-start items-start flex-col lg:w-160 bg-green-100/50 rounded-xl border shadow gap-y-6 p-4">
               <div className="flex justify-between items-center w-full">
                 <h6 className="font-semibold text-sm flex items-center gap-x-1">
                   <Shield size={16} color="green" fill="green" /> Identified
                   Allergens for Clinical Record
                 </h6>
-                <span className="bg-green-500 px-2 py-1 text-green-800 text-xs rounded-full font-semibold">
+                <span className="bg-green-500 px-2 py-1 text-green-800 text-xs rounded-full font-semibold lg:block hidden">
                   {allergies.length} items Structured
                 </span>
               </div>
@@ -178,12 +178,17 @@ const SignUpReview = () => {
                       {data.allergy} Allergen
                     </h6>
                     <span
-                      className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold`}
+                      className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold lg:block hidden`}
                     >
                       {data.risk} Risk
                     </span>
                   </div>
                   <h6 className="lg:text-sm text-neutral-600">{data.cause}</h6>
+                  <span
+                    className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold block lg:hidden`}
+                  >
+                    {data.risk} Risk
+                  </span>
                 </div>
               ))}
             </div>

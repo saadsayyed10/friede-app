@@ -15,8 +15,43 @@ interface ChatMessage {
   content: string;
 }
 
+const TypewriterAIResponse = ({ content }: { content: string }) => {
+  const [displayedText, setDisplayedText] = useState<string>("");
+
+  useEffect(() => {
+    if (!content || content === "undefined") {
+      setDisplayedText("");
+      return;
+    }
+
+    const words = content.split(" ");
+    let currentWords: string[] = [];
+    let currentIndex = 0;
+    setDisplayedText("");
+
+    const interval = setInterval(() => {
+      if (currentIndex < words.length) {
+        const word = words[currentIndex];
+
+        if (word && word !== "undefined") {
+          currentWords.push(word);
+          setDisplayedText(currentWords.join(" "));
+        }
+        currentIndex++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 40);
+
+    return () => clearInterval(interval);
+  }, [content]);
+
+  return <h6 className="text-sm lg:text-base">{displayedText}</h6>;
+};
+
 const SignUpAllergy = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { setChatHistory, reset } = useChatHistory();
   const chatHistory = useChatHistory((state) => state.chatHistory);
@@ -28,6 +63,14 @@ const SignUpAllergy = () => {
 
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [dataMimic, loading]);
 
   const handleInput = () => {
     const textarea = textareaRef.current;
@@ -56,6 +99,7 @@ const SignUpAllergy = () => {
       content: currentQuestion,
     };
     setDataMimic((prev) => [...prev, newHumanMessage]);
+
     try {
       await allergyInformationExtractionAIAgentAPI(
         question,
@@ -65,9 +109,14 @@ const SignUpAllergy = () => {
         .then((res) => {
           setChatHistory(res.data.chatHistory);
 
+          // Safely check that response exists and isn't the literal string "undefined"
+          const rawResponse = res.data.response;
+          const safeResponse =
+            rawResponse && rawResponse !== "undefined" ? rawResponse : "";
+
           const newAIMessage: ChatMessage = {
             role: "ai",
-            content: res.data.response,
+            content: safeResponse,
           };
           setDataMimic((prev) => [...prev, newAIMessage]);
 
@@ -103,7 +152,7 @@ const SignUpAllergy = () => {
     <>
       <Navbar />
 
-      <div className="flex justify-start items-start w-full lg:h-min min-h-screen flex-col gap-y-10 mb-20 lg:px-16 px-6 py-4 lg:py-20">
+      <div className="flex justify-start items-start w-full lg:h-min min-h-screen flex-col gap-y-10 mb-28 lg:px-16 px-6 py-4 lg:py-20">
         <div className="flex justify-center items-center w-full gap-x-2 lg:mb-14 mb-10 mt-4">
           <div className="flex justify-center items-center flex-col gap-y-2">
             <div className="flex justify-center items-center w-10 h-10 rounded-[100%] bg-green-700">
@@ -148,30 +197,42 @@ const SignUpAllergy = () => {
             </div>
           </div>
 
-          {dataMimic.map((chats, idx) => (
-            <div
-              key={idx}
-              className="flex justify-center items-center w-full flex-col gap-y-8"
-            >
+          {dataMimic.map((chats, idx) => {
+            const isLatestAiMessage =
+              chats.role === "ai" && idx === dataMimic.length - 1;
+
+            return (
               <div
-                className={`flex ${chats.role === "ai" ? "justify-start items-start" : "justify-end items-start"} w-full`}
+                key={idx}
+                className="flex justify-center items-center w-full flex-col gap-y-8"
               >
                 <div
-                  className={`flex ${chats.role === "ai" ? "justify-start items-start" : "justify-end items-start"} w-full gap-x-4`}
+                  className={`flex ${chats.role === "ai" ? "justify-start items-start" : "justify-end items-start"} w-full`}
                 >
-                  {chats.role === "ai" && <Bot color="green" size={20} />}
                   <div
-                    className={`flex ${chats.role === "ai" ? "justify-start" : "justify-end"} items-start lg:max-w-120 max-w-56 ${chats.role === "ai" ? "p-4" : "px-4 py-6"} ${chats.role === "ai" ? "bg-neutral-100" : "bg-green-100"} shadow rounded-xl`}
+                    className={`flex ${chats.role === "ai" ? "justify-start items-start" : "justify-end items-start"} w-full gap-x-4`}
                   >
-                    <h6 className="text-sm lg:text-base">{chats.content}</h6>
+                    {chats.role === "ai" && <Bot color="green" size={20} />}
+                    <div
+                      className={`flex ${chats.role === "ai" ? "justify-start" : "justify-end"} items-start lg:max-w-120 max-w-56 ${chats.role === "ai" ? "p-4" : "px-4 py-6"} ${chats.role === "ai" ? "bg-neutral-100" : "bg-green-100"} shadow rounded-xl`}
+                    >
+                      {isLatestAiMessage ? (
+                        <TypewriterAIResponse content={chats.content} />
+                      ) : (
+                        <h6 className="text-sm lg:text-base">
+                          {chats.content}
+                        </h6>
+                      )}
+                    </div>
+                    {chats.role === "human" && (
+                      <div className="w-10 h-10 bg-green-700 rounded-[100%]" />
+                    )}
                   </div>
-                  {chats.role === "human" && (
-                    <div className="w-10 h-10 bg-green-700 rounded-[100%]" />
-                  )}
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
+          <div ref={messagesEndRef} />
         </div>
       </div>
 

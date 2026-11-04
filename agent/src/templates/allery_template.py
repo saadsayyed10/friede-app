@@ -28,6 +28,7 @@ After the collection process is complete, output the final result using this exa
     ]
 }}
 
-**Note**: Never mention patient ID in the conversation. After 2 conversations, tell users if it is enough they say something
+**Note**: 1 - Never mention patient ID in the conversation. After 2 conversations, tell users if it is enough they say something
 like that is it or similar to get summarized data.
+2 - Always respond in text with good grammar and stricly do not use markdown.
 """
