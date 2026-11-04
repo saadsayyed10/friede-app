@@ -53,7 +53,7 @@ const SignUpAllergy = () => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const { setChatHistory, reset } = useChatHistory();
+  const { setChatHistory, reset: resetChatHistory } = useChatHistory();
   const chatHistory = useChatHistory((state) => state.chatHistory);
   const { userId: patientId, profilePictureUrl } = useSignUp();
   const { setAllergies } = useAllergy();
@@ -124,7 +124,7 @@ const SignUpAllergy = () => {
             navigate("/signup/review");
 
             setAllergies(res.data.summaryData.allergies);
-            reset();
+            resetChatHistory();
           }
         })
         .catch((err) => {

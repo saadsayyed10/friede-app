@@ -5,9 +5,8 @@ import {
   MilkOff,
   ScrollText,
   Shield,
-  Trash,
   User,
-  UserRoundMinus,
+  ChevronsUpDown,
 } from "lucide-react";
 import Navbar from "./Navbar";
 import { useSignUp } from "@/hooks/useSignUp";
@@ -29,9 +28,17 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useAllergy } from "@/hooks/useAllergy";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Settings = () => {
   const {
@@ -44,7 +51,8 @@ const Settings = () => {
   const { allergies, reset: allergyReset } = useAllergy();
   const { signOut } = useClerk();
 
-  const [deleteLoader, setDeleteLoader] = useState(false);
+  const [openDeleteAccount, setOpenDeleteAccount] = useState<boolean>(false);
+  const [deleteLoader, setDeleteLoader] = useState<boolean>(false);
 
   const handleAccountDelete = async () => {
     setDeleteLoader(true);
@@ -349,56 +357,77 @@ const Settings = () => {
 
         <div className="flex justify-start items-start lg:w-[60%] w-full mt-6 lg:p-6 p-4 bg-neutral-100 shadow rounded-xl">
           <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-200 text-red-700">
-              <Trash size={23} />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-200">
+              <User size={23} color="green" />
             </div>
 
             <div className="min-w-0 flex-1">
               <h4 className="text-xl font-semibold tracking-tight text-neutral-900">
-                Delete account
+                Manage account
               </h4>
 
               <div className="flex justify-start items-start w-full lg:flex-row flex-col gap-y-4 lg:gap-x-6">
                 <p className="mt-1 text-sm text-neutral-500 lg:w-[60%]">
-                  Permanently remove your Friede account. This action is
-                  destructive and cannot be undone.
+                  Permanently remove your Friede account or update your account,
+                  everything can be managed from here
                 </p>
 
-                <AlertDialog>
-                  <AlertDialogTrigger
+                <DropdownMenu>
+                  <DropdownMenuTrigger
                     render={
-                      <Button
-                        className={
-                          "bg-red-600 hover:bg-red-700 text-neutral-200 hover:text-neutral-300 lg:mt-0 mt-6"
-                        }
-                      >
-                        <UserRoundMinus size={23} /> Erase Memory
+                      <Button className={"lg:mt-0 mt-6"}>
+                        <ChevronsUpDown size={23} /> Options
                       </Button>
                     }
-                  />
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account from our servers.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleAccountDelete}>
-                        {deleteLoader ? <Spinner /> : "Confirm"}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                  >
+                    Open
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className={"w-60"}>
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Update Options</DropdownMenuLabel>
+                      <DropdownMenuItem>Profile</DropdownMenuItem>
+                      <DropdownMenuItem>Allergy Summary</DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Delete Options</DropdownMenuLabel>
+                      <DropdownMenuItem>Allergy Memory</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => setOpenDeleteAccount(true)}
+                      >
+                        Account
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <AlertDialog open={openDeleteAccount} onOpenChange={setOpenDeleteAccount}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={
+                "bg-red-500 hover:bg-red-700 text-white hover:text-white"
+              }
+              onClick={handleAccountDelete}
+            >
+              {deleteLoader ? <Spinner /> : "Confirm"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Footer />
     </>
