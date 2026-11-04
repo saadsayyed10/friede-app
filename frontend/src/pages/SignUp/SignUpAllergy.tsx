@@ -55,7 +55,7 @@ const SignUpAllergy = () => {
 
   const { setChatHistory, reset } = useChatHistory();
   const chatHistory = useChatHistory((state) => state.chatHistory);
-  const { userId: patientId } = useSignUp();
+  const { userId: patientId, profilePictureUrl } = useSignUp();
   const { setAllergies } = useAllergy();
 
   const [question, setQuestion] = useState<string>("");
@@ -225,7 +225,11 @@ const SignUpAllergy = () => {
                       )}
                     </div>
                     {chats.role === "human" && (
-                      <div className="w-10 h-10 bg-green-700 rounded-[100%]" />
+                      <img
+                        src={profilePictureUrl!}
+                        alt={profilePictureUrl!}
+                        className="w-10 h-10 rounded-[100%]"
+                      />
                     )}
                   </div>
                 </div>

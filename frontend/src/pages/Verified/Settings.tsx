@@ -2,7 +2,9 @@ import {
   CloudCheck,
   Database,
   LockOpen,
+  MilkOff,
   ScrollText,
+  Shield,
   Trash,
   User,
   UserRoundMinus,
@@ -29,9 +31,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useAllergy } from "@/hooks/useAllergy";
 
 const Settings = () => {
-  const { name, email, profilePictureUrl, userId } = useSignUp();
+  const {
+    name,
+    email,
+    profilePictureUrl,
+    userId,
+    reset: userReset,
+  } = useSignUp();
+  const { allergies, reset: allergyReset } = useAllergy();
   const { signOut } = useClerk();
 
   const [deleteLoader, setDeleteLoader] = useState(false);
@@ -42,6 +52,10 @@ const Settings = () => {
       const token = await getToken();
 
       await deleteUserAccountAPI(token!);
+
+      userReset();
+      allergyReset();
+
       await signOut({ redirectUrl: "/" });
     } catch (error: any) {
       toast.add({
@@ -275,6 +289,63 @@ const Settings = () => {
             </div>
           </div>
         </div>
+
+        {allergies.length !== 0 && (
+          <div className="flex justify-start items-start flex-col gap-y-2 w-full">
+            <div className="flex justify-start items-start w-full my-6">
+              <div className="flex items-start gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-green-700">
+                  <MilkOff size={23} />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-xl font-semibold tracking-tight text-neutral-900">
+                    Allergic Information
+                  </h4>
+                  <p className="mt-1 text-sm text-neutral-500">
+                    Extracted summary of allergen clincial information
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-start items-start flex-col lg:w-160 bg-green-100/50 rounded-xl border shadow gap-y-6 p-4">
+              <div className="flex justify-between items-center w-full">
+                <h6 className="font-semibold text-sm flex items-center gap-x-1">
+                  <Shield size={16} color="green" fill="green" /> Identified
+                  Allergens for Clinical Record
+                </h6>
+                <span className="bg-green-500 px-2 py-1 text-green-800 text-xs rounded-full font-semibold lg:block hidden">
+                  {allergies.length} items Structured
+                </span>
+              </div>
+
+              {allergies.map((data, idx) => (
+                <div
+                  key={idx}
+                  className="shadow rounded-xl bg-neutral-50 flex justify-start items-start flex-col gap-y-2 w-full px-4 py-2"
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <h6 className="font-semibold text-lg">
+                      {data.allergy} Allergen
+                    </h6>
+                    <span
+                      className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold lg:block hidden`}
+                    >
+                      {data.risk} Risk
+                    </span>
+                  </div>
+                  <h6 className="lg:text-sm text-neutral-600">{data.cause}</h6>
+                  <span
+                    className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold block lg:hidden`}
+                  >
+                    {data.risk} Risk
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex justify-start items-start lg:w-[60%] w-full mt-6 lg:p-6 p-4 bg-neutral-100 shadow rounded-xl">
           <div className="flex items-start gap-3">

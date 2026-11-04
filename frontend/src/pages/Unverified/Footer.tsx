@@ -33,7 +33,7 @@ const Footer = () => {
 
       <div className="flex lg:hidden justify-end items-end w-full opacity-50">
         <Button variant={"link"} size={"sm"}>
-          <ArrowUpRight size={10} /> Portfolio
+          <ArrowUpRight size={10} /> Documentations
         </Button>
       </div>
     </div>
