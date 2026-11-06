@@ -1,5 +1,6 @@
 import axios from "axios";
-import { aiApiUrl } from "./apiUrl";
+import { aiApiUrl, apiUrl } from "./apiUrl";
+import type { AllergyItem } from "@/hooks/useAllergy";
 
 export const allergyInformationExtractionAIAgentAPI = async (
   question: string,
@@ -11,4 +12,19 @@ export const allergyInformationExtractionAIAgentAPI = async (
     patientId,
     chatHistory,
   });
+};
+
+export const updateAllergyInformationAPI = async (
+  allergies: AllergyItem[],
+  token: string,
+) => {
+  return axios.put(
+    `${apiUrl}/allergy/update`,
+    { allergies },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
 };

@@ -9,6 +9,16 @@ import { useSignUp } from "@/hooks/useSignUp";
 import { Spinner } from "@/components/ui/spinner";
 import { useAllergy } from "@/hooks/useAllergy";
 import { useNavigate } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ChatMessage {
   role: "human" | "ai";
@@ -56,12 +66,15 @@ const UpdateAllergy = () => {
   const { setChatHistory, reset: resetChatHistory } = useChatHistory();
   const chatHistory = useChatHistory((state) => state.chatHistory);
   const { userId: patientId, profilePictureUrl } = useSignUp();
-  const { setAllergies } = useAllergy();
+  const { setAllergies, reset: resetAllergy } = useAllergy();
+  const allergies = useAllergy((state) => state.allergies);
 
   const [question, setQuestion] = useState<string>("");
   const [dataMimic, setDataMimic] = useState<ChatMessage[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [openAllergyDialog, setOpenAllergyDialog] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
   const scrollToBottom = () => {
@@ -121,7 +134,7 @@ const UpdateAllergy = () => {
           setDataMimic((prev) => [...prev, newAIMessage]);
 
           if (res.data.isCompleted === true) {
-            navigate("/signup/review");
+            resetAllergy();
 
             setAllergies(res.data.summaryData.allergies);
             resetChatHistory();
@@ -233,6 +246,47 @@ const UpdateAllergy = () => {
           </div>
         </div>
       </footer>
+
+      <AlertDialog open={openAllergyDialog} onOpenChange={setOpenAllergyDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Allergy Summary</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action will permanently erase the previous allergic
+              information from the Friede memory.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          {allergies.map((data, idx) => (
+            <div
+              key={idx}
+              className="shadow rounded-xl bg-neutral-50 flex justify-start items-start flex-col gap-y-2 w-full px-4 py-2"
+            >
+              <div className="flex justify-between items-center w-full">
+                <h6 className="font-semibold text-lg">
+                  {data.allergy} Allergen
+                </h6>
+                <span
+                  className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold lg:block hidden`}
+                >
+                  {data.risk} Risk
+                </span>
+              </div>
+              <h6 className="lg:text-sm text-neutral-600">{data.cause}</h6>
+              <span
+                className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold block lg:hidden`}
+              >
+                {data.risk} Risk
+              </span>
+            </div>
+          ))}
+
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction>Update</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
