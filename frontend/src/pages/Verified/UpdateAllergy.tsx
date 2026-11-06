@@ -4,7 +4,10 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { useChatHistory } from "@/hooks/useChatHistory";
 import { toast } from "@/components/ui/toast";
-import { allergyInformationExtractionAIAgentAPI } from "@/api/allergy.api";
+import {
+  allergyInformationExtractionAIAgentAPI,
+  updateAllergyInformationAPI,
+} from "@/api/allergy.api";
 import { useSignUp } from "@/hooks/useSignUp";
 import { Spinner } from "@/components/ui/spinner";
 import { useAllergy } from "@/hooks/useAllergy";
@@ -19,6 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { getToken } from "@clerk/react";
 
 interface ChatMessage {
   role: "human" | "ai";
@@ -73,7 +77,10 @@ const UpdateAllergy = () => {
   const [dataMimic, setDataMimic] = useState<ChatMessage[]>([]);
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [allergyUpdateLoading, setAllergyUpdateLoading] =
+    useState<boolean>(false);
   const [openAllergyDialog, setOpenAllergyDialog] = useState<boolean>(false);
+  const [reviewFlag, setReviewFlag] = useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -135,9 +142,10 @@ const UpdateAllergy = () => {
 
           if (res.data.isCompleted === true) {
             resetAllergy();
-
             setAllergies(res.data.summaryData.allergies);
-            resetChatHistory();
+
+            setReviewFlag(true);
+            setOpenAllergyDialog(true);
           }
         })
         .catch((err) => {
@@ -154,6 +162,39 @@ const UpdateAllergy = () => {
     } finally {
       setLoading(false);
       setQuestion("");
+    }
+  };
+
+  const handleUpdateAllergy = async () => {
+    setAllergyUpdateLoading(true);
+    try {
+      const token = await getToken();
+
+      await updateAllergyInformationAPI(allergies, token!)
+        .then((res) => {
+          toast.add({
+            title: "Allergy summary updated",
+            description:
+              "Friede updated data based on the revised allergen information.",
+          });
+
+          console.log(res.data.message);
+          resetChatHistory();
+          navigate("/friede");
+        })
+        .catch((err) =>
+          toast.add({
+            title: "Friede failed to update",
+            description: err?.response?.data?.error,
+          }),
+        );
+    } catch (error: any) {
+      toast.add({
+        title: "Friede is not available right now",
+        description: error.message,
+      });
+    } finally {
+      setAllergyUpdateLoading(false);
     }
   };
 
@@ -184,6 +225,11 @@ const UpdateAllergy = () => {
             const isLatestAiMessage =
               chats.role === "ai" && idx === dataMimic.length - 1;
 
+            const isJsonPayload = chats.content.trim().startsWith("{");
+            const displayContent = isJsonPayload
+              ? "Thanks for sharing your allergies with Friede. Please review your allergens."
+              : chats.content;
+
             return (
               <div
                 key={idx}
@@ -200,10 +246,10 @@ const UpdateAllergy = () => {
                       className={`flex ${chats.role === "ai" ? "justify-start" : "justify-end"} items-start lg:max-w-120 max-w-56 ${chats.role === "ai" ? "p-4" : "px-4 py-6"} ${chats.role === "ai" ? "bg-neutral-100" : "bg-green-100"} shadow rounded-xl`}
                     >
                       {isLatestAiMessage ? (
-                        <TypewriterAIResponse content={chats.content} />
+                        <TypewriterAIResponse content={displayContent} />
                       ) : (
                         <h6 className="text-sm lg:text-base">
-                          {chats.content}
+                          {displayContent}
                         </h6>
                       )}
                     </div>
@@ -235,14 +281,24 @@ const UpdateAllergy = () => {
               className="w-full resize-none overflow-y-auto max-h-37.5 lg:py-2 py-1 px-3 bg-green-100/60 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-600 text-sm lg:text-base"
               placeholder="Type your allergy details or corrections (e.g., 'Also sensitive to Suifa')..."
             />
-            <Button
-              size={"lg"}
-              className={"bg-green-700 hover:bg-green-800 mb-0.5"}
-              onClick={handleSendQuestion}
-              disabled={loading}
-            >
-              {loading ? <Spinner /> : <SendHorizonal color="white" />}
-            </Button>
+            {reviewFlag ? (
+              <Button
+                size={"lg"}
+                className={"bg-green-700 hover:bg-green-800 mb-0.5"}
+                onClick={() => setOpenAllergyDialog(true)}
+              >
+                Review
+              </Button>
+            ) : (
+              <Button
+                size={"lg"}
+                className={"bg-green-700 hover:bg-green-800 mb-0.5"}
+                onClick={handleSendQuestion}
+                disabled={loading}
+              >
+                {loading ? <Spinner /> : <SendHorizonal color="white" />}
+              </Button>
+            )}
           </div>
         </div>
       </footer>
@@ -254,6 +310,11 @@ const UpdateAllergy = () => {
             <AlertDialogDescription>
               This action will permanently erase the previous allergic
               information from the Friede memory.
+              <br />
+              <br />{" "}
+              <span className="font-medium text-neutral-800">
+                Please review new allergen information below:
+              </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -267,14 +328,14 @@ const UpdateAllergy = () => {
                   {data.allergy} Allergen
                 </h6>
                 <span
-                  className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold lg:block hidden`}
+                  className={`${data.risk === "High" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "Low" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold lg:block hidden`}
                 >
                   {data.risk} Risk
                 </span>
               </div>
               <h6 className="lg:text-sm text-neutral-600">{data.cause}</h6>
               <span
-                className={`${data.risk === "Low" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "High" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold block lg:hidden`}
+                className={`${data.risk === "High" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "Low" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold block lg:hidden`}
               >
                 {data.risk} Risk
               </span>
@@ -283,7 +344,9 @@ const UpdateAllergy = () => {
 
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction>Update</AlertDialogAction>
+            <AlertDialogAction onClick={handleUpdateAllergy}>
+              {allergyUpdateLoading ? <Spinner /> : "Update"}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
