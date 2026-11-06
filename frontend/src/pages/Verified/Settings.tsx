@@ -40,6 +40,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
+import { deleteAllergyInformationAPI } from "@/api/allergy.api";
 
 const Settings = () => {
   const {
@@ -55,7 +56,10 @@ const Settings = () => {
   const navigate = useNavigate();
 
   const [openDeleteAccount, setOpenDeleteAccount] = useState<boolean>(false);
+  const [openDeleteAllergyMemory, setOpenDeleteAllergyMemory] =
+    useState<boolean>(false);
   const [deleteLoader, setDeleteLoader] = useState<boolean>(false);
+  const [eraseAllergyLoader, setEraseAllergyLoader] = useState<boolean>(false);
   const [logoutLoading, setLogoutLoading] = useState<boolean>(false);
 
   const handleAccountDelete = async () => {
@@ -73,10 +77,33 @@ const Settings = () => {
       toast.add({
         title: "Failed to delete account",
         description:
-          "Server is busy right now, please try again after few minutes",
+          "Server is busy right now, please try again after few minutes...",
       });
     } finally {
       setDeleteLoader(false);
+    }
+  };
+
+  const handleEraseAllergyMemory = async () => {
+    setEraseAllergyLoader(true);
+    try {
+      const token = await getToken();
+
+      const res = await deleteAllergyInformationAPI(token!);
+      console.log(res.data.message);
+
+      userReset();
+      allergyReset();
+
+      navigate("/friede");
+    } catch (error: any) {
+      toast.add({
+        title: "Failed to erase memory",
+        description:
+          "Server is busy right now, please try again after few minutes...",
+      });
+    } finally {
+      setEraseAllergyLoader(false);
     }
   };
 
@@ -320,7 +347,7 @@ const Settings = () => {
           </div>
         </div>
 
-        {allergies.length !== 0 && (
+        {allergies && (
           <div className="flex justify-start items-start flex-col gap-y-2 w-full">
             <div className="flex justify-start items-start w-full my-6">
               <div className="flex items-start gap-3">
@@ -346,11 +373,11 @@ const Settings = () => {
                   Allergens for Clinical Record
                 </h6>
                 <span className="bg-green-500 px-2 py-1 text-green-800 text-xs rounded-full font-semibold lg:block hidden">
-                  {allergies.length} items Structured
+                  {allergies?.length} items Structured
                 </span>
               </div>
 
-              {allergies.map((data, idx) => (
+              {allergies?.map((data, idx) => (
                 <div
                   key={idx}
                   className="shadow rounded-xl bg-neutral-50 flex justify-start items-start flex-col gap-y-2 w-full px-4 py-2"
@@ -419,6 +446,7 @@ const Settings = () => {
                       <DropdownMenuLabel>Delete Options</DropdownMenuLabel>
                       <DropdownMenuItem
                         className={"hover:bg-red-100 hover:text-red-500"}
+                        onClick={() => setOpenDeleteAllergyMemory(true)}
                       >
                         Allergy Memory
                       </DropdownMenuItem>
@@ -443,6 +471,7 @@ const Settings = () => {
         </div>
       </div>
 
+      {/* Delete Account */}
       <AlertDialog open={openDeleteAccount} onOpenChange={setOpenDeleteAccount}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -461,6 +490,33 @@ const Settings = () => {
               onClick={handleAccountDelete}
             >
               {deleteLoader ? <Spinner /> : "Confirm"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Erase allergy memory */}
+      <AlertDialog
+        open={openDeleteAllergyMemory}
+        onOpenChange={setOpenDeleteAllergyMemory}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently erase your
+              allergy information from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={
+                "bg-red-500 hover:bg-red-700 text-white hover:text-white"
+              }
+              onClick={handleEraseAllergyMemory}
+            >
+              {eraseAllergyLoader ? <Spinner /> : "Erase Memory"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

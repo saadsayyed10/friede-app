@@ -318,7 +318,7 @@ const UpdateAllergy = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
 
-          {allergies.map((data, idx) => (
+          {allergies?.map((data, idx) => (
             <div
               key={idx}
               className="shadow rounded-xl bg-neutral-50 flex justify-start items-start flex-col gap-y-2 w-full px-4 py-2"
