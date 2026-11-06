@@ -54,8 +54,7 @@ This is handled by **API - 1.3**.
 
 1. From **`/friede/settings`** page, patient hits **Update Allergy Data** button.
 2. This triggers the erase memory first ref. **API - 2.5**.
-   1. Deletes allergy information from **MongoDB**.
-   2. Deletes allergy information from **Chroma Vector DB** with **clerk ID**.
+   1. Deletes allergy information from **Chroma Vector DB** with **clerk ID**.
 3. Then after erasing memory, it redirects to **`/friede/allergy`** .
 4. Same process as before ref. **API - 2.1 and 2.2**.
 5. Once the summarization is return via a structured **JSON** data:
@@ -70,8 +69,8 @@ This is handled by **API - 1.3**.
 ![Delete allergy summarization of a patient](module2_5.png)
 
 1. From **`/friede/settings`** page, patient hits **Erase Memory** button.
-2. This first triggers the **API** of **business login server** and deletes allergy information from **MongoDB**.
-3. Then, this triggers the **API** of **AI agent server** and deletes allergy information from **Chroma Vector DB** with **clerk ID**.
+2. This first triggers the **API** of **AI agent server** and deletes allergy information from **Chroma Vector DB** with **clerk ID**.
+3. Then, triggers the **API** of **business login server** and deletes allergy information from **MongoDB**.
 4. Then after erasing memory, it redirects to **`/friede/allergy`** .
 5. Same process as before ref. **API - 2.1 and 2.2**.
 6. Once the summarization is return via a structured **JSON** data:

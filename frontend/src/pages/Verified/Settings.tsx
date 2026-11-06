@@ -54,6 +54,8 @@ const Settings = () => {
   const [openDeleteAccount, setOpenDeleteAccount] = useState<boolean>(false);
   const [deleteLoader, setDeleteLoader] = useState<boolean>(false);
 
+  const [logoutLoading, setLogoutLoading] = useState<boolean>(false);
+
   const handleAccountDelete = async () => {
     setDeleteLoader(true);
     try {
@@ -73,6 +75,24 @@ const Settings = () => {
       });
     } finally {
       setDeleteLoader(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    setLogoutLoading(true);
+    try {
+      userReset();
+      allergyReset();
+
+      new Promise<void>((resolve) => setTimeout(resolve, 3000));
+
+      await signOut({ redirectUrl: "/" });
+    } catch (error: any) {
+      toast.add({
+        description: error.message,
+      });
+    } finally {
+      setLogoutLoading(false);
     }
   };
 
@@ -391,11 +411,22 @@ const Settings = () => {
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                       <DropdownMenuLabel>Delete Options</DropdownMenuLabel>
-                      <DropdownMenuItem>Allergy Memory</DropdownMenuItem>
                       <DropdownMenuItem
+                        className={"hover:bg-red-100 hover:text-red-500"}
+                      >
+                        Allergy Memory
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className={"hover:bg-red-100 hover:text-red-500"}
                         onClick={() => setOpenDeleteAccount(true)}
                       >
                         Account
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem onClick={handleSignOut}>
+                        {logoutLoading ? <Spinner /> : "Sign Out"}
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
