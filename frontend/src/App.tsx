@@ -7,6 +7,7 @@ import Dashboard from "./pages/Verified/Dashboard";
 import Settings from "./pages/Verified/Settings";
 import SSOCallback from "./pages/SSOCallback";
 import SignUpAllergy from "./pages/SignUp/SignUpAllergy";
+import UpdateAllergy from "./pages/Verified/UpdateAllergy";
 
 const App = () => {
   return (
@@ -23,6 +24,7 @@ const App = () => {
 
         <Route path="/friede" element={<Dashboard />} />
         <Route path="/friede/settings" element={<Settings />} />
+        <Route path="/friede/allergy" element={<UpdateAllergy />} />
       </Routes>
     </Router>
   );

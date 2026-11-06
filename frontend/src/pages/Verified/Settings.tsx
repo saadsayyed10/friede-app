@@ -39,6 +39,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const {
@@ -51,9 +52,10 @@ const Settings = () => {
   const { allergies, reset: allergyReset } = useAllergy();
   const { signOut } = useClerk();
 
+  const navigate = useNavigate();
+
   const [openDeleteAccount, setOpenDeleteAccount] = useState<boolean>(false);
   const [deleteLoader, setDeleteLoader] = useState<boolean>(false);
-
   const [logoutLoading, setLogoutLoading] = useState<boolean>(false);
 
   const handleAccountDelete = async () => {
@@ -406,7 +408,11 @@ const Settings = () => {
                     <DropdownMenuGroup>
                       <DropdownMenuLabel>Update Options</DropdownMenuLabel>
                       <DropdownMenuItem>Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Allergy Summary</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => navigate("/friede/allergy")}
+                      >
+                        Allergy Summary
+                      </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
