@@ -2,10 +2,11 @@ import {
   CloudCheck,
   Database,
   LockOpen,
+  MilkOff,
   ScrollText,
-  Trash,
+  Shield,
   User,
-  UserRoundMinus,
+  ChevronsUpDown,
 } from "lucide-react";
 import Navbar from "./Navbar";
 import { useSignUp } from "@/hooks/useSignUp";
@@ -27,14 +28,39 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useAllergy } from "@/hooks/useAllergy";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
+import { deleteAllergyInformationAPI } from "@/api/allergy.api";
 
 const Settings = () => {
-  const { name, email, profilePictureUrl, userId } = useSignUp();
+  const {
+    name,
+    email,
+    profilePictureUrl,
+    userId,
+    reset: userReset,
+  } = useSignUp();
+  const { allergies, reset: allergyReset } = useAllergy();
   const { signOut } = useClerk();
 
-  const [deleteLoader, setDeleteLoader] = useState(false);
+  const navigate = useNavigate();
+
+  const [openDeleteAccount, setOpenDeleteAccount] = useState<boolean>(false);
+  const [openDeleteAllergyMemory, setOpenDeleteAllergyMemory] =
+    useState<boolean>(false);
+  const [deleteLoader, setDeleteLoader] = useState<boolean>(false);
+  const [eraseAllergyLoader, setEraseAllergyLoader] = useState<boolean>(false);
+  const [logoutLoading, setLogoutLoading] = useState<boolean>(false);
 
   const handleAccountDelete = async () => {
     setDeleteLoader(true);
@@ -42,15 +68,60 @@ const Settings = () => {
       const token = await getToken();
 
       await deleteUserAccountAPI(token!);
+
+      userReset();
+      allergyReset();
+
       await signOut({ redirectUrl: "/" });
     } catch (error: any) {
       toast.add({
         title: "Failed to delete account",
         description:
-          "Server is busy right now, please try again after few minutes",
+          "Server is busy right now, please try again after few minutes...",
       });
     } finally {
       setDeleteLoader(false);
+    }
+  };
+
+  const handleEraseAllergyMemory = async () => {
+    setEraseAllergyLoader(true);
+    try {
+      const token = await getToken();
+
+      const res = await deleteAllergyInformationAPI(token!);
+      console.log(res.data.message);
+
+      userReset();
+      allergyReset();
+
+      navigate("/friede");
+    } catch (error: any) {
+      toast.add({
+        title: "Failed to erase memory",
+        description:
+          "Server is busy right now, please try again after few minutes...",
+      });
+    } finally {
+      setEraseAllergyLoader(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    setLogoutLoading(true);
+    try {
+      userReset();
+      allergyReset();
+
+      new Promise<void>((resolve) => setTimeout(resolve, 3000));
+
+      await signOut({ redirectUrl: "/" });
+    } catch (error: any) {
+      toast.add({
+        description: error.message,
+      });
+    } finally {
+      setLogoutLoading(false);
     }
   };
 
@@ -276,58 +347,180 @@ const Settings = () => {
           </div>
         </div>
 
+        {allergies && (
+          <div className="flex justify-start items-start flex-col gap-y-2 w-full">
+            <div className="flex justify-start items-start w-full my-6">
+              <div className="flex items-start gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-100 text-green-700">
+                  <MilkOff size={23} />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-xl font-semibold tracking-tight text-neutral-900">
+                    Allergic Information
+                  </h4>
+                  <p className="mt-1 text-sm text-neutral-500">
+                    Extracted summary of allergen clincial information
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-start items-start flex-col lg:w-160 bg-green-100/50 rounded-xl border shadow gap-y-6 p-4">
+              <div className="flex justify-between items-center w-full">
+                <h6 className="font-semibold text-sm flex items-center gap-x-1">
+                  <Shield size={16} color="green" fill="green" /> Identified
+                  Allergens for Clinical Record
+                </h6>
+                <span className="bg-green-500 px-2 py-1 text-green-800 text-xs rounded-full font-semibold lg:block hidden">
+                  {allergies?.length} items Structured
+                </span>
+              </div>
+
+              {allergies?.map((data, idx) => (
+                <div
+                  key={idx}
+                  className="shadow rounded-xl bg-neutral-50 flex justify-start items-start flex-col gap-y-2 w-full px-4 py-2"
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <h6 className="font-semibold text-lg">
+                      {data.allergy} Allergen
+                    </h6>
+                    <span
+                      className={`${data.risk === "High" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "Low" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold lg:block hidden`}
+                    >
+                      {data.risk} Risk
+                    </span>
+                  </div>
+                  <h6 className="lg:text-sm text-neutral-600">{data.cause}</h6>
+                  <span
+                    className={`${data.risk === "High" && "bg-red-200 text-red-700"} ${data.risk === "Moderate" && "bg-yellow-200 text-yellow-700"} ${data.risk === "Low" && "bg-green-200 text-green-700"} px-2 py-1 text-xs rounded-full font-semibold block lg:hidden`}
+                  >
+                    {data.risk} Risk
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex justify-start items-start lg:w-[60%] w-full mt-6 lg:p-6 p-4 bg-neutral-100 shadow rounded-xl">
           <div className="flex items-start gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-red-200 text-red-700">
-              <Trash size={23} />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-200">
+              <User size={23} color="green" />
             </div>
 
             <div className="min-w-0 flex-1">
               <h4 className="text-xl font-semibold tracking-tight text-neutral-900">
-                Delete account
+                Manage account
               </h4>
 
               <div className="flex justify-start items-start w-full lg:flex-row flex-col gap-y-4 lg:gap-x-6">
                 <p className="mt-1 text-sm text-neutral-500 lg:w-[60%]">
-                  Permanently remove your Friede account. This action is
-                  destructive and cannot be undone.
+                  Permanently remove your Friede account or update your account,
+                  everything can be managed from here
                 </p>
 
-                <AlertDialog>
-                  <AlertDialogTrigger
+                <DropdownMenu>
+                  <DropdownMenuTrigger
                     render={
-                      <Button
-                        className={
-                          "bg-red-600 hover:bg-red-700 text-neutral-200 hover:text-neutral-300 lg:mt-0 mt-6"
-                        }
-                      >
-                        <UserRoundMinus size={23} /> Erase Memory
+                      <Button className={"lg:mt-0 mt-6"}>
+                        <ChevronsUpDown size={23} /> Options
                       </Button>
                     }
-                  />
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        Are you absolutely sure?
-                      </AlertDialogTitle>
-                      <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account from our servers.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleAccountDelete}>
-                        {deleteLoader ? <Spinner /> : "Confirm"}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                  >
+                    Open
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className={"w-60"}>
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Update Options</DropdownMenuLabel>
+                      <DropdownMenuItem>Profile</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() => navigate("/friede/allergy")}
+                      >
+                        Allergy Summary
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuLabel>Delete Options</DropdownMenuLabel>
+                      <DropdownMenuItem
+                        className={"hover:bg-red-100 hover:text-red-500"}
+                        onClick={() => setOpenDeleteAllergyMemory(true)}
+                      >
+                        Allergy Memory
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className={"hover:bg-red-100 hover:text-red-500"}
+                        onClick={() => setOpenDeleteAccount(true)}
+                      >
+                        Account
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem onClick={handleSignOut}>
+                        {logoutLoading ? <Spinner /> : "Sign Out"}
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Delete Account */}
+      <AlertDialog open={openDeleteAccount} onOpenChange={setOpenDeleteAccount}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={
+                "bg-red-500 hover:bg-red-700 text-white hover:text-white"
+              }
+              onClick={handleAccountDelete}
+            >
+              {deleteLoader ? <Spinner /> : "Confirm"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Erase allergy memory */}
+      <AlertDialog
+        open={openDeleteAllergyMemory}
+        onOpenChange={setOpenDeleteAllergyMemory}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently erase your
+              allergy information from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={
+                "bg-red-500 hover:bg-red-700 text-white hover:text-white"
+              }
+              onClick={handleEraseAllergyMemory}
+            >
+              {eraseAllergyLoader ? <Spinner /> : "Erase Memory"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <Footer />
     </>

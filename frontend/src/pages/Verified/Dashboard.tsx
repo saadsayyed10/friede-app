@@ -6,9 +6,11 @@ import { useSignUp } from "@/hooks/useSignUp";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Spinner } from "@/components/ui/spinner";
+import { useAllergy } from "@/hooks/useAllergy";
 
 const Dashboard = () => {
   const { setUserId, setName, setEmail, setProfilePictureUrl } = useSignUp();
+  const { setAllergies } = useAllergy();
   const { signOut } = useClerk();
   const navigate = useNavigate();
 
@@ -31,6 +33,7 @@ const Dashboard = () => {
           setUserId(user.clerkId!);
           setName(user.name!);
           setEmail(user.email!);
+          setAllergies(user.allergies);
           setProfilePictureUrl(user.profilePictureUrl!);
 
           navigate("/friede/settings");

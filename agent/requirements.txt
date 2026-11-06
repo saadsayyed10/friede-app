@@ -1,9 +1,0 @@
-fastapi
-langchain
-langchain-chroma
-langchain-google-genai
-langchain-openai
-pandas
-pydantic
-python-dotenv
-uvicorn

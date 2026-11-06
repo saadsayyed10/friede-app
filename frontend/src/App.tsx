@@ -6,6 +6,8 @@ import SignUpReview from "./pages/SignUp/SignUpReview";
 import Dashboard from "./pages/Verified/Dashboard";
 import Settings from "./pages/Verified/Settings";
 import SSOCallback from "./pages/SSOCallback";
+import SignUpAllergy from "./pages/SignUp/SignUpAllergy";
+import UpdateAllergy from "./pages/Verified/UpdateAllergy";
 
 const App = () => {
   return (
@@ -17,10 +19,12 @@ const App = () => {
 
         <Route path="/authorization" element={<Authorization />} />
         <Route path="/signup/basic" element={<SignUpBasic />} />
+        <Route path="/signup/allergy" element={<SignUpAllergy />} />
         <Route path="/signup/review" element={<SignUpReview />} />
 
         <Route path="/friede" element={<Dashboard />} />
         <Route path="/friede/settings" element={<Settings />} />
+        <Route path="/friede/allergy" element={<UpdateAllergy />} />
       </Routes>
     </Router>
   );
