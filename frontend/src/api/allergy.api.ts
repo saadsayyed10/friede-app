@@ -28,3 +28,11 @@ export const updateAllergyInformationAPI = async (
     },
   );
 };
+
+export const deleteAllergyInformationAPI = async (token: string) => {
+  return axios.delete(`${apiUrl}/allergy/delete`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
