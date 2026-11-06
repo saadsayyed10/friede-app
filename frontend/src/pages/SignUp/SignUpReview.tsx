@@ -154,7 +154,7 @@ const SignUpReview = () => {
           </Label>
           <Input className="lg:w-80 w-full" disabled value={email!} />
         </div>
-        {allergies.length !== 0 && (
+        {allergies && (
           <div className="flex justify-start items-start flex-col gap-y-2 w-full">
             <Label>Summary of your Allergies</Label>
             <div className="flex justify-start items-start flex-col lg:w-160 bg-green-100/50 rounded-xl border shadow gap-y-6 p-4">
@@ -164,11 +164,11 @@ const SignUpReview = () => {
                   Allergens for Clinical Record
                 </h6>
                 <span className="bg-green-500 px-2 py-1 text-green-800 text-xs rounded-full font-semibold lg:block hidden">
-                  {allergies.length} items Structured
+                  {allergies?.length} items Structured
                 </span>
               </div>
 
-              {allergies.map((data, idx) => (
+              {allergies?.map((data, idx) => (
                 <div
                   key={idx}
                   className="shadow rounded-xl bg-neutral-50 flex justify-start items-start flex-col gap-y-2 w-full px-4 py-2"
