@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,9 +12,12 @@ from type_class.allergy_types import ChatRequest
 app = FastAPI()
 router = APIRouter()
 
+devUrl = os.getenv("LOCAL_CORS_ORIGIN")
+prodUrl = os.getenv("PROD_CORS_ORIGIN")
+
 origins = [
-    "http://localhost:5173",      
-    "https://friede-app.vercel.app/",   
+    devUrl,      
+    prodUrl,   
 ]
 
 app.add_middleware(
